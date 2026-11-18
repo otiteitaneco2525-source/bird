@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>魔法の金糸雀はどこだ？（試遊版）</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#141c24;color:#e9e4d8;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;font-size:14px;line-height:1.6}
+h1{font-size:22px;margin:0;color:#e8c27a}h2{color:#e8c27a;margin:0 0 8px}h3{margin:14px 0 6px;font-size:15px;color:#e8c27a}
+button{font:inherit;color:#e9e4d8;background:#2c3a47;border:1px solid #4b5c6b;border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover:not(:disabled){background:#384a5a}button:disabled{opacity:.4;cursor:not-allowed}
+button.primary{background:#e8c27a;color:#1b232b;border-color:#e8c27a;font-weight:bold}button.primary:hover:not(:disabled){background:#f2d291}
+button.on{outline:2px solid #e8c27a;background:#3d4f60}
+#setup{max-width:640px;margin:40px auto;padding:24px;background:#1d2832;border-radius:14px}
+details{margin:10px 0}summary{cursor:pointer;color:#e8c27a;font-weight:bold;margin-bottom:6px}#setup ul,#setup ol,#help ul,#help ol{margin:4px 0;padding-left:22px}
+#setup label{display:block;margin:10px 0 2px;color:#b9c3cc}#setup input,#setup select{font:inherit;padding:6px 8px;border-radius:6px;border:1px solid #4b5c6b;background:#141c24;color:#e9e4d8;width:100%}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}.note{color:#9fb0bf;font-size:13px}
+#game{display:none;grid-template-columns:minmax(0,1fr) 380px;gap:14px;padding:12px 16px;max-width:1500px;margin:0 auto}
+header{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+#hud{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+#hud .turn{font-weight:bold;font-size:18px;color:#e8c27a}#hud .phase{background:#2c3a47;border-radius:20px;padding:2px 12px}
+#hud .score b{font-size:20px;color:#fff}#hud .gauge{letter-spacing:2px;color:#e8c27a}#hud .timer{background:#7a2d2d;border-radius:20px;padding:2px 12px;font-weight:bold}
+#tabs{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}#tabs .tS{border-color:#7b6bd0}#tabs .tB{border-color:#d0b04a}
+#banner{grid-column:1/-1;background:#22303c;border-left:4px solid #e8c27a;border-radius:6px;padding:8px 12px;min-height:38px}
+#boardWrap{position:relative}
+.board{display:grid;gap:8px}
+.room{position:relative;border:2px solid;border-radius:10px;padding:6px 6px 4px;min-height:150px;cursor:default;min-width:0}
+.room.target{box-shadow:0 0 0 3px #e8c27a,0 0 14px #e8c27a;cursor:pointer}.room.target2{box-shadow:0 0 0 3px #6fd3ff,0 0 14px #6fd3ff;cursor:pointer}
+.rhead{display:flex;align-items:center;gap:6px;margin-bottom:4px}.rhead b{font-size:18px}.rcol{font-size:11px;border-radius:10px;padding:0 8px;color:#111;font-weight:bold}
+.furns{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;align-items:end;min-height:86px}
+.furn{position:relative;text-align:center}.fbar{width:70%;margin:0 auto;border-radius:4px 4px 0 0;border:1px solid rgba(0,0,0,.45)}
+.flabel{font-size:10px;line-height:1.25;color:#d5dbe0}.fmarks{min-height:20px;font-size:12px;line-height:1.2}
+.mk{display:inline-block;background:rgba(0,0,0,.45);border-radius:6px;padding:0 3px;margin:1px}.mk.old{opacity:.55}.mk.white{color:#fff}
+.birdm{background:#e8c27a;color:#111;border-radius:8px;padding:0 3px;font-weight:bold}
+.pieces{min-height:24px;display:flex;flex-wrap:wrap;gap:3px;margin-top:2px}
+.piece{border-radius:10px;padding:0 6px;font-size:13px;background:#5a4bb0;color:#fff}.piece.s1{background:#2f8f86}.piece.ghost{opacity:.55;outline:1px dashed #fff}.piece.frozen{outline:2px solid #9fe3ff}
+.pin{margin-left:auto}
+.tag{display:inline-block;border-radius:6px;padding:0 4px;margin:1px;font-size:11px;font-weight:bold;color:#111;background:#ddd;border:1px solid rgba(0,0,0,.5)}.tag.old{opacity:.6}.tag.wht{background:#fff}.tag.trap{background:#ff9d5c}.tag small{font-weight:normal;margin-left:2px}
+.blk{position:absolute;background:#6fd3ff;color:#062a3a;font-weight:bold;border-radius:50%;width:22px;height:22px;line-height:22px;text-align:center;z-index:3}
+.blk.r{right:-17px;top:45%}.blk.l{left:-17px;top:45%}.blk.d{bottom:-17px;left:46%}.blk.u{top:-17px;left:46%}
+#trail{position:absolute;left:0;top:0;pointer-events:none}
+aside{display:flex;flex-direction:column;gap:10px;min-width:0}
+.card{background:#1d2832;border:1px solid #334352;border-radius:10px;padding:10px 12px;margin-bottom:8px}.card.big p{font-size:16px}
+.small{font-size:12px;color:#9fb0bf}.warn{color:#ffb86b}.prefs{margin:2px 0 6px}
+.choices{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.pc{border:1px solid #4b5c6b;border-radius:8px;padding:6px 10px;margin:6px 0;cursor:pointer}.pc.sel{border-color:#e8c27a;background:#263442}
+.bell{display:block;margin:8px 0;color:#e8c27a}.sur button{border-color:#a05555}.sur button.on{background:#5a2c2c;outline-color:#ff9d9d}
+.memo textarea{width:100%;font:inherit;background:#10171e;color:#e9e4d8;border:1px solid #4b5c6b;border-radius:8px;padding:6px 8px;margin:4px 0 8px;resize:vertical}
+.mrow{border-top:1px solid #334352;padding:6px 0}.mline{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:3px 0}.mlabel{width:74px;font-size:12px;color:#9fb0bf}
+.mbtn{padding:2px 8px;font-size:12px;min-width:44px}.mbtn i{font-style:normal;font-weight:bold;margin-left:3px}.mbtn.m1{outline:2px solid #e8c27a;background:#4a4226}.mbtn.m2{opacity:.5;text-decoration:line-through}.steps{margin:0 0 8px;padding-left:20px;color:#cfd8df}.pc button{margin-top:6px}.status{margin:6px 0;padding-left:18px}
+#log{background:#10171e;border:1px solid #334352;border-radius:10px;padding:8px 10px;height:230px;overflow:auto;font-size:12px}#log .lt{color:#e8c27a;margin-right:6px}
+.overlay{position:fixed;inset:0;background:rgba(8,12,16,.86);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
+.dialog{background:#1d2832;border:1px solid #e8c27a;border-radius:14px;padding:20px 24px;max-width:640px;width:100%;max-height:94vh;overflow:auto}
+#roomCv{width:100%;max-width:560px;display:block;margin:0 auto;background:#161f28;border-radius:10px}
+#roomList{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.rs{font-size:18px}.rs b{font-size:28px;color:#fff}
+@media(max-width:1000px){#game{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="setup">
+  <h1>魔法の金糸雀はどこだ？</h1>
+  <p class="note">試遊版です。CPUが動かす小鳥2羽を、あなたが探索者になって追いかけます（1人用）。</p>
+  <details open><summary>遊び方（はじめに読んでください）</summary><h3>目的</h3>
+<p>家具に隠れて逃げる<b>小鳥2羽</b>を、手がかりから推理して捕まえます。全8ターン。小鳥を1羽捕まえると探索者に6点、小鳥は逃げているあいだ毎ターン1点。点の多いほうが勝ちです。</p>
+<h3>あなたの操作（探索者1と探索者2）</h3>
+<ol><li>上のボタンで探索者の画面を開く</li><li><b>魔法使い</b>か<b>弟子</b>を選び、盤面の光っている部屋をクリック（1部屋まで移動。今の部屋でもよい）</li><li>開いた3Dの部屋で、調べる<b>家具をクリック</b></li><li>魔法使いと弟子の両方が決まったら「決定」</li></ol>
+<h3>小鳥のきまり</h3>
+<ul><li>隠れるのは「好きな色の家具」か「好きな高さの家具」だけ</li><li>苦手な色（1色）の部屋には入らず、その色の家具にも隠れない</li><li>毎ターン必ず、同じ部屋の別の家具か、上下左右の隣の部屋へ移る</li><li>捕まっても、好みを変えて復活することがある</li></ul>
+<h3>手がかり</h3>
+<ul><li><b>気配</b>：同じ部屋の別の家具に小鳥がいる</li><li><b>色付きの羽</b>：その家具に、前のターン小鳥がいた。羽の色＝その小鳥の好きな色</li><li><b>白い羽</b>（弟子だけ）：前のターン、その部屋に小鳥がいた</li><li><b>鳴き声 ♪</b>（弟子だけ）：隣の部屋に小鳥がいる</li></ul>
+<h3>魔法と道具</h3>
+<ul><li><b>加速</b>：魔法使いが2部屋先まで移動</li><li><b>範囲魔法</b>：小鳥がいる4部屋の範囲がわかる</li><li><b>追跡魔法</b>：小鳥がどの部屋からどの部屋へ移ったかがわかる</li><li><b>道の封鎖</b>：隣の部屋との道を、次の小鳥の移動まで塞ぐ</li><li><b>一斉探索</b>：部屋の家具4つを全部調べる（1回だけ。次のターンは動けない）</li><li><b>鳥かごの罠</b>：家具に置くと、次にそこへ入った小鳥が捕まる（1人1回）</li><li><b>静穏の鈴</b>：何も見つからない探索が4回たまると使える。次の小鳥の移動を止める</li></ul>
+<p class="note">画面右のメモ欄と推理メモは、自由に使えます。「答えを見る」は試合が終わるまで押さないのがおすすめです。</p></details>
+  <details><summary>設定（そのままで遊べます）</summary>
+  <div class="grid2">
+    <div><label>探索者1の名前</label><input id="n0" value="探索者1"></div>
+    <div><label>探索者2の名前</label><input id="n1" value="探索者2"></div>
+    <div><label>小鳥1の名前</label><input id="n2" value="小鳥1"></div>
+    <div><label>小鳥2の名前</label><input id="n3" value="小鳥2"></div>
+    <div><label>部屋の大きさ</label><select id="size"><option value="3x3">3×3（A〜I）</option><option value="3x4">3×4（A〜L）</option><option value="4x4" selected>4×4（A〜P）</option><option value="4x5">4×5（A〜T）</option><option value="5x5">5×5（A〜Y）</option></select></div>
+    <div><label>ターン数</label><input id="turns" type="number" min="3" max="20" value="8"></div>
+    <div><label>制限時間（秒。0でなし）</label><input id="timer" type="number" min="0" max="600" value="120"></div>
+    <div><label>魔法の回数（足止めの上限も同じ）</label><input id="magic" type="number" min="0" max="9" value="2"></div>
+    <div style="grid-column:1/-1"><label>小鳥を動かす人</label><select id="cpuBirds"><option value="1" selected>CPUが動かす（1人用。小鳥の位置は見えません）</option><option value="0">人が動かす（4人が1台を交代で使う）</option></select></div>
+    <div><label>小鳥の苦手な色の数</label><select id="dislikes"><option value="2">2色</option><option value="1" selected>1色</option><option value="0">なし</option></select></div>
+    <div><label>小鳥を1羽捕まえた点</label><input id="capPts" type="number" min="1" max="30" value="6"></div><input type="hidden" id="oneAction" value="0">
+  </div>
+  </details>
+  <p class="note" style="display:none">制限時間は1人ずつ別々で、自分の画面を開いた瞬間から減り始めます。部屋の色の確認は1人30秒、苦手な色を選ぶ時間に制限はありません。一斉探索は4×4以上で使えます。</p>
+  <button class="primary" data-fn="startFromSetup">試合を始める</button>
+</div>
+<div id="game">
+  <header><h1>魔法の金糸雀はどこだ？</h1><div id="hud"></div><button data-fn="showHelp" style="margin-left:auto">遊び方</button></header>
+  <div id="tabs"></div>
+  <div id="banner"></div>
+  <main><div id="boardWrap"></div></main>
+  <aside><div id="panel"></div><div id="log"></div></aside>
+</div>
+<div class="overlay" id="cover"><div class="dialog"><h2><span id="coverName"></span> さんの画面を開きます</h2><p>ほかの人は画面を見ないでください。</p><button class="primary" data-fn="confirmViewer">表示する</button> <button data-fn="cancelViewer">やめる</button></div></div>
+<div class="overlay" id="roomModal"><div class="dialog"><h2 id="roomTitle"></h2><canvas id="roomCv" width="560" height="470"></canvas><div class="small">家具（箱）をクリックして選びます。暗い家具は選べません。下の一覧からも選べます。3Dモデルは仮の箱です。</div><div id="roomExtra"></div><div id="roomList"></div><button data-fn="closeRoom">閉じる</button></div></div>
+<div class="overlay" id="help"><div class="dialog"><h2>遊び方</h2><h3>目的</h3>
+<p>家具に隠れて逃げる<b>小鳥2羽</b>を、手がかりから推理して捕まえます。全8ターン。小鳥を1羽捕まえると探索者に6点、小鳥は逃げているあいだ毎ターン1点。点の多いほうが勝ちです。</p>
+<h3>あなたの操作（探索者1と探索者2）</h3>
+<ol><li>上のボタンで探索者の画面を開く</li><li><b>魔法使い</b>か<b>弟子</b>を選び、盤面の光っている部屋をクリック（1部屋まで移動。今の部屋でもよい）</li><li>開いた3Dの部屋で、調べる<b>家具をクリック</b></li><li>魔法使いと弟子の両方が決まったら「決定」</li></ol>
+<h3>小鳥のきまり</h3>
+<ul><li>隠れるのは「好きな色の家具」か「好きな高さの家具」だけ</li><li>苦手な色（1色）の部屋には入らず、その色の家具にも隠れない</li><li>毎ターン必ず、同じ部屋の別の家具か、上下左右の隣の部屋へ移る</li><li>捕まっても、好みを変えて復活することがある</li></ul>
+<h3>手がかり</h3>
+<ul><li><b>気配</b>：同じ部屋の別の家具に小鳥がいる</li><li><b>色付きの羽</b>：その家具に、前のターン小鳥がいた。羽の色＝その小鳥の好きな色</li><li><b>白い羽</b>（弟子だけ）：前のターン、その部屋に小鳥がいた</li><li><b>鳴き声 ♪</b>（弟子だけ）：隣の部屋に小鳥がいる</li></ul>
+<h3>魔法と道具</h3>
+<ul><li><b>加速</b>：魔法使いが2部屋先まで移動</li><li><b>範囲魔法</b>：小鳥がいる4部屋の範囲がわかる</li><li><b>追跡魔法</b>：小鳥がどの部屋からどの部屋へ移ったかがわかる</li><li><b>道の封鎖</b>：隣の部屋との道を、次の小鳥の移動まで塞ぐ</li><li><b>一斉探索</b>：部屋の家具4つを全部調べる（1回だけ。次のターンは動けない）</li><li><b>鳥かごの罠</b>：家具に置くと、次にそこへ入った小鳥が捕まる（1人1回）</li><li><b>静穏の鈴</b>：何も見つからない探索が4回たまると使える。次の小鳥の移動を止める</li></ul>
+<p class="note">画面右のメモ欄と推理メモは、自由に使えます。「答えを見る」は試合が終わるまで押さないのがおすすめです。</p><button class="primary" data-fn="hideHelp">閉じる</button></div></div>
+<div class="overlay" id="result"><div class="dialog" id="resultBody"></div></div>
+<script>
+// ===== 魔法の金糸雀はどこだ？ ルール部分（画面と通信から独立） =====
+const COLORS = ['red', 'blue', 'yellow', 'green'];
+const CJP = { red: '赤', blue: '青', yellow: '黄', green: '緑' };
+const KINDS = ['椅子', '本棚', 'たんす', '丸椅子', 'ベッド', 'ランプ', '戸棚', '机'];
+const PIECE_JP = { w: '魔法使い', a: '弟子' };
+
+function makeRand(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function pick(rand, arr) { return arr[Math.floor(rand() * arr.length)]; }
+function shuffle(rand, arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+
+function roomName(i) { return String.fromCharCode(65 + i); }
+function neighbors(G, room) {
+  const { rows, cols } = G.cfg; const r = Math.floor(room / cols), c = room % cols; const out = [];
+  if (r > 0) out.push(room - cols); if (r < rows - 1) out.push(room + cols);
+  if (c > 0) out.push(room - 1); if (c < cols - 1) out.push(room + 1);
+  return out;
+}
+function dist(G, a, b) {
+  const cols = G.cfg.cols;
+  return Math.abs(Math.floor(a / cols) - Math.floor(b / cols)) + Math.abs((a % cols) - (b % cols));
+}
+function isBlocked(G, a, b) { return G.blocks.some(e => (e[0] === a && e[1] === b) || (e[0] === b && e[1] === a)); }
+
+function rollRoomColors(G, rand) {
+  const n = G.cfg.rows * G.cfg.cols; const base = Math.floor(n / 4);
+  let list = [];
+  COLORS.forEach(c => { for (let i = 0; i < base; i++) list.push(c); });
+  while (list.length < n) list.push(pick(rand, COLORS));
+  list = shuffle(rand, list);
+  G.rooms.forEach((rm, i) => { rm.color = list[i]; });
+}
+function rollFav(rand) { return { color: pick(rand, COLORS), height: 1 + Math.floor(rand() * 4) }; }
+function sameFav(a, b) { return a.color === b.color && a.height === b.height; }
+function validDis(color, dis, n) { if (n === undefined) n = 2; return Array.isArray(dis) && dis.length === n && new Set(dis).size === n && dis.every(c => COLORS.includes(c) && c !== color); }
+function randDis(rand, color, n) { if (n === undefined) n = 2; return shuffle(rand, COLORS.filter(c => c !== color)).slice(0, n).sort(); }
+
+function newGame(cfg, rand) {
+  const G = {
+    cfg: Object.assign({ rows: 3, cols: 4, turns: 10, magic: 2, seekers: 2, birds: 2, names: [], dislikes: 1, oneAction: false, capPts: null }, cfg),
+    rooms: [], seekers: [], birds: [], turn: 0, phase: 'colorcheck', rerolls: 0,
+    gauge: 0, bellActive: false, blocks: [], traps: [], frozen: [], lastFrozenTurn: {},
+    inputs: {}, score: { bird: 0, seeker: 0 }, log: [], reveal: [], marks: [], agree: {},
+  };
+  const n = G.cfg.rows * G.cfg.cols;
+  for (let i = 0; i < n; i++) {
+    const cs = shuffle(rand, COLORS), hs = shuffle(rand, [1, 2, 3, 4]), ks = shuffle(rand, KINDS);
+    G.rooms.push({ id: i, name: roomName(i), color: null, furn: [0, 1, 2, 3].map(k => ({ color: cs[k], height: hs[k], kind: ks[k] })) });
+  }
+  rollRoomColors(G, rand);
+  let pi = 0;
+  for (let i = 0; i < G.cfg.seekers; i++) {
+    G.seekers.push({ pid: 's' + i, name: G.cfg.names[pi++] || ('探索者' + (i + 1)), w: { room: Math.floor(rand() * n) }, a: { room: Math.floor(rand() * n) },
+      magic: { boost: G.cfg.magic, range: G.cfg.magic, track: G.cfg.magic, block: G.cfg.magic }, trapLeft: 1, sweepLeft: n >= 16 ? 1 : 0, stunTurn: -1 });
+  }
+  for (let i = 0; i < G.cfg.birds; i++) {
+    let p; do { p = rollFav(rand); } while (G.birds.some(b => sameFav(b.prefs, p)));
+    p.dis = [];
+    G.birds.push({ pid: 'b' + i, name: G.cfg.names[pi++] || ('小鳥' + (i + 1)), prefs: p, pending: null, pos: null, prev: null, status: 'active',
+      everCaught: false, revivedTurn: 1, freezeLeft: G.cfg.magic, track: [], prefsLog: [] });
+  }
+  return G;
+}
+
+// ---- 小鳥の隠れ場所 ----
+function legalFurn(G, prefs, room) {
+  const rm = G.rooms[room];
+  if (prefs.dis.includes(rm.color)) return [];
+  const out = [];
+  rm.furn.forEach((f, i) => { if (!prefs.dis.includes(f.color) && (f.color === prefs.color || f.height === prefs.height)) out.push(i); });
+  return out;
+}
+function allSpots(G, prefs) {
+  const out = [];
+  G.rooms.forEach(rm => legalFurn(G, prefs, rm.id).forEach(f => out.push({ room: rm.id, furn: f })));
+  return out;
+}
+function birdMoves(G, bird) {
+  const out = []; const p = bird.pos;
+  legalFurn(G, bird.prefs, p.room).forEach(f => { if (f !== p.furn) out.push({ room: p.room, furn: f }); });
+  neighbors(G, p.room).forEach(nb => { if (!isBlocked(G, p.room, nb)) legalFurn(G, bird.prefs, nb).forEach(f => out.push({ room: nb, furn: f })); });
+  return out;
+}
+function has(list, s) { return list.some(x => x.room === s.room && x.furn === s.furn); }
+
+// ---- 開始前：部屋の色の確認 ----
+function resolveColorCheck(G, rand) {
+  const allAgree = G.birds.every(b => G.agree[b.pid] !== false);
+  G.agree = {};
+  if (!allAgree && G.rerolls < 3) {
+    G.rerolls++; rollRoomColors(G, rand);
+    G.log.push({ turn: 0, text: '小鳥陣営が納得しなかったため、部屋の色を決め直しました（' + G.rerolls + '回目）。' });
+    if (G.rerolls < 3) return false;
+    G.log.push({ turn: 0, text: '決め直しは3回まで。この配置で始めます。' });
+  }
+  if (G.cfg.dislikes === 0) { startGame(G, rand); return true; }
+  G.phase = 'dislike'; return true;
+}
+// 苦手な2色は、部屋の色が決まった後に、小鳥のプレイヤーが自分で選ぶ
+function setDislikes(G, bi, dis, rand) {
+  const b = G.birds[bi];
+  const n = G.cfg.dislikes;
+  b.prefs.dis = validDis(b.prefs.color, dis, n) ? dis.slice().sort() : randDis(rand, b.prefs.color, n); b.disSet = true;
+  if (G.birds.every(x => x.disSet)) { startGame(G, rand); return true; }
+  return false;
+}
+function startGame(G, rand) {
+  G.birds.forEach(b => {
+    b.prefsLog = [{ turn: 0, prefs: b.prefs }];
+    const spots = allSpots(G, b.prefs);
+    b.pos = pick(rand, spots); b.prev = null; b.track[0] = { room: b.pos.room, furn: b.pos.furn, ev: 'start' };
+  });
+  G.turn = 1; G.phase = 'bird'; G.inputs = {};
+  G.log.push({ turn: 1, text: '試合開始。' });
+}
+
+// ---- 捕まった小鳥：復活の準備（新しい好みを先に決めて本人に見せる） ----
+function prepareRevive(G, bi, rand) {
+  const b = G.birds[bi];
+  if (b.status !== 'caught' || b.pending) return b.pending;
+  let p, guard = 0;
+  do { p = rollFav(rand); guard++; }
+  while (guard < 200 && (sameFav(p, b.prefs) || G.birds.some(o => o !== b && sameFav(o.prefs, p))));
+  p.dis = []; b.pending = p; return p;
+}
+function canFreeze(G, bird, piece) {
+  return bird.status === 'caught' && bird.freezeLeft > 0 && G.lastFrozenTurn[piece] !== G.turn - 1;
+}
+
+// ---- 小鳥陣営のターン ----
+function capture(G, b, how, byName) {
+  const T = G.cfg.turns;
+  // 初めて捕まえた1羽の点（未設定ならターン数の半分）。復活した小鳥は、残りターンの割合ぶん
+  const cp = G.cfg.capPts != null ? G.cfg.capPts : Math.floor(T / 2);
+  const pts = b.everCaught ? Math.max(1, Math.floor(cp * (T - b.revivedTurn + 1) / T)) : cp;
+  b.status = 'caught'; b.everCaught = true; b.pending = null;
+  b.track[G.turn] = { room: b.pos.room, furn: b.pos.furn, ev: 'caught' };
+  b.caughtAt = { room: b.pos.room, furn: b.pos.furn, turn: G.turn };
+  G.score.seeker += pts;
+  return pts;
+}
+function resolveBirdPhase(G, rand) {
+  const events = [];
+  const bell = G.bellActive; G.bellActive = false;
+  G.frozen = [];
+  G.birds.forEach((b, bi) => {
+    const inp = G.inputs[b.pid];
+    if (b.status === 'active') {
+      b.movedThisTurn = false;
+      if (bell) { b.prev = { room: b.pos.room, furn: b.pos.furn }; b.lastEv = 'bell'; return; }
+      const moves = birdMoves(G, b);
+      b.prev = { room: b.pos.room, furn: b.pos.furn };
+      if (moves.length === 0) { b.lastEv = 'stuck'; return; }
+      let dest = (inp && inp.t === 'move' && has(moves, inp)) ? { room: inp.room, furn: inp.furn } : null;
+      if (!dest) { dest = pick(rand, moves); b.lastEv = 'random'; } else b.lastEv = 'move';
+      b.pos = dest; b.movedThisTurn = true;
+    } else {
+      if (inp && inp.t === 'freeze' && canFreeze(G, b, inp.piece)) {
+        G.frozen.push(inp.piece); G.lastFrozenTurn[inp.piece] = G.turn; b.freezeLeft--;
+        events.push({ t: 'freeze', piece: inp.piece });
+      } else if (inp && inp.t === 'revive') {
+        const pf = prepareRevive(G, bi, rand);
+        const p = { color: pf.color, height: pf.height, dis: validDis(pf.color, inp.dis, G.cfg.dislikes) ? inp.dis.slice().sort() : randDis(rand, pf.color, G.cfg.dislikes) };
+        b.prefs = p; b.pending = null;
+        const spots = allSpots(G, p);
+        const dest = (inp.room != null && has(spots, inp)) ? { room: inp.room, furn: inp.furn } : pick(rand, spots);
+        b.status = 'active'; b.pos = dest; b.prev = null; b.revivedTurn = G.turn; b.movedThisTurn = true; b.lastEv = 'revive';
+        b.prefsLog.push({ turn: G.turn, prefs: p });
+        events.push({ t: 'revive', bird: bi });
+      }
+    }
+  });
+  // 鳥かごの罠：この移動で入った小鳥が捕まる
+  G.traps.forEach(tr => {
+    G.birds.forEach((b, bi) => {
+      if (b.status === 'active' && b.movedThisTurn && b.pos.room === tr.room && b.pos.furn === tr.furn) {
+        const pts = capture(G, b, 'trap'); events.push({ t: 'trap', bird: bi, room: tr.room, furn: tr.furn, pts });
+      }
+    });
+  });
+  G.traps = []; G.blocks = [];
+  G.inputs = {}; G.phase = 'seeker'; G.birdEvents = events; G.bellWas = bell;
+  if (bell) G.log.push({ turn: G.turn, text: '静穏の鈴が響き、盤面の小鳥は移動できませんでした。' });
+  events.forEach(e => {
+    if (e.t === 'freeze') G.log.push({ turn: G.turn, text: pieceLabel(G, e.piece) + 'が足止めされました（このターンは移動できません）。' });
+    if (e.t === 'revive') G.log.push({ turn: G.turn, text: '捕まっていた小鳥が1羽、復活しました。' });
+    if (e.t === 'trap') G.log.push({ turn: G.turn, text: '鳥かごの罠に小鳥がかかりました！（' + G.rooms[e.room].name + 'の部屋）探索者陣営 +' + e.pts + '点' });
+  });
+  return events;
+}
+function pieceStuck(G, si, k) { return G.frozen.includes(si + k) || (k === 'w' && G.seekers[si].stunTurn === G.turn); }
+function pieceLabel(G, piece) { const s = G.seekers[+piece[0]]; return s.name + 'の' + PIECE_JP[piece[1]]; }
+function furnLabel(G, room, furn) { const f = G.rooms[room].furn[furn]; return G.rooms[room].name + 'の部屋・' + CJP[f.color] + 'の' + f.kind + '（高さ' + f.height + '）'; }
+
+// ---- 探索者陣営のターン ----
+function validSeekerInput(G, si, inp) {
+  // 入力を検証し、足りない部分を既定値（その場で待機＋ランダム探索）で埋めた形にして返す
+  const s = G.seekers[si]; const out = { bell: !!(inp && inp.bell) };
+  let trapUsed = false;
+  ['w', 'a'].forEach(k => {
+    const me = s[k]; const pid = si + k; const src = (inp && inp[k]) || {};
+    let to = me.room, boost = false;
+    if (src.to != null && src.to !== me.room && !pieceStuck(G, si, k)) {
+      const d = dist(G, me.room, src.to);
+      if (d === 1) to = src.to;
+      else if (d === 2 && k === 'w' && src.boost && s.magic.boost > 0) { to = src.to; boost = true; }
+    }
+    let act = src.act || null; let ok = false;
+    if (act) {
+      if (act.t === 'search' && act.furn >= 0 && act.furn < 4) ok = true;
+      else if (act.t === 'trap' && act.furn >= 0 && act.furn < 4 && s.trapLeft > 0 && !trapUsed) { ok = true; trapUsed = true; }
+      else if (k === 'w' && act.t === 'range' && s.magic.range > 0) ok = true;
+      else if (k === 'w' && act.t === 'track' && s.magic.track > 0 && G.turn > 1) ok = true;
+      else if (k === 'w' && act.t === 'block' && s.magic.block > 0 && neighbors(G, to).includes(act.to)) ok = true;
+      else if (k === 'w' && act.t === 'sweep' && s.sweepLeft > 0) ok = true;
+    }
+    out[k] = { to, boost, act: ok ? act : null };
+  });
+  if (G.cfg.oneAction) {
+    const actor = out.w.act ? 'w' : out.a.act ? 'a' : 'w';
+    out[actor === 'w' ? 'a' : 'w'].act = { t: 'pass' };
+  }
+  return out;
+}
+function resolveSeekerPhase(G, rand) {
+  const steps = [];
+  const plans = G.seekers.map((s, si) => validSeekerInput(G, si, G.inputs[s.pid]));
+  // 移動
+  plans.forEach((p, si) => {
+    const s = G.seekers[si];
+    ['w', 'a'].forEach(k => { s[k].room = p[k].to; if (p[k].boost) s.magic.boost--; if (!p[k].act) p[k].act = { t: 'search', furn: Math.floor(rand() * 4), auto: true }; });
+  });
+  // 静穏の鈴
+  let bellBy = null;
+  plans.forEach((p, si) => { if (p.bell && G.gauge >= 4 && !G.bellActive) { G.gauge = 0; G.bellActive = true; bellBy = si; } });
+  if (bellBy != null) steps.push({ t: 'bell', si: bellBy, gauge: 0, score: { bird: G.score.bird, seeker: G.score.seeker } });
+  // 探索結果（1人ずつ順番に）
+  const prevSnap = G.birds.filter(b => b.status === 'active' && b.prev).map(b => ({ prev: b.prev, color: b.prefs.color }));
+  plans.forEach((p, si) => {
+    const s = G.seekers[si];
+    ['w', 'a'].forEach(k => {
+      const act = p[k].act; const room = s[k].room; if (act.t === 'pass') return; const st = { t: act.t, si, k, room, auto: !!act.auto };
+      if (act.t === 'search') {
+        st.furn = act.furn;
+        const found = G.birds.map((b, bi) => bi).filter(bi => { const b = G.birds[bi]; return b.status === 'active' && b.pos.room === room && b.pos.furn === act.furn; });
+        if (found.length) { st.found = found.map(bi => ({ bird: bi, pts: capture(G, G.birds[bi], 'search') })); }
+        else {
+          st.presence = G.birds.filter(b => b.status === 'active' && b.pos.room === room).length;
+          st.feathers = prevSnap.filter(x => x.prev.room === room && x.prev.furn === act.furn).map(x => x.color);
+          if (k === 'a') {
+            st.white = prevSnap.filter(x => x.prev.room === room).length;
+            const nb = neighbors(G, room);
+            st.chirp = G.birds.filter(b => b.status === 'active' && nb.includes(b.pos.room)).length;
+          } else { st.white = 0; st.chirp = 0; }
+          st.empty = !st.presence && !st.feathers.length && !st.white && !st.chirp;
+          if (st.empty) G.gauge = Math.min(4, G.gauge + 1);
+        }
+      } else if (act.t === 'range') {
+        s.magic.range--; const set = new Set();
+        G.birds.filter(b => b.status === 'active').forEach(b => {
+          const { rows, cols } = G.cfg; const r = Math.floor(b.pos.room / cols), c = b.pos.room % cols; const opts = [];
+          for (let r0 = r - 1; r0 <= r; r0++) for (let c0 = c - 1; c0 <= c; c0++) if (r0 >= 0 && c0 >= 0 && r0 + 1 < rows && c0 + 1 < cols) opts.push([r0, c0]);
+          const [r0, c0] = pick(rand, opts);
+          [[0, 0], [0, 1], [1, 0], [1, 1]].forEach(d => set.add((r0 + d[0]) * cols + c0 + d[1]));
+        });
+        st.rooms = Array.from(set).sort((a, b) => a - b);
+      } else if (act.t === 'track') {
+        s.magic.track--;
+        st.moves = G.birds.filter(b => b.status === 'active' && b.prev).map(b => ({ from: b.prev.room, to: b.pos.room }));
+      } else if (act.t === 'block') {
+        s.magic.block--; G.blocks.push([room, act.to]); st.to = act.to;
+      } else if (act.t === 'sweep') {
+        s.sweepLeft--; s.stunTurn = G.turn + 1;
+        const found = G.birds.map((b, bi) => bi).filter(bi => { const b = G.birds[bi]; return b.status === 'active' && b.pos.room === room; });
+        if (found.length) st.found = found.map(bi => ({ bird: bi, pts: capture(G, G.birds[bi], 'sweep') }));
+        else { st.sweepFeathers = prevSnap.filter(x => x.prev.room === room).map(x => ({ furn: x.prev.furn, color: x.color })); st.empty = !st.sweepFeathers.length; if (st.empty) G.gauge = Math.min(4, G.gauge + 1); }
+      } else if (act.t === 'trap') {
+        s.trapLeft--; G.traps.push({ room, furn: act.furn, by: si }); st.furn = act.furn;
+      }
+      st.gauge = G.gauge; st.score = { bird: G.score.bird, seeker: G.score.seeker };
+      steps.push(st);
+    });
+  });
+  G.reveal = steps; G.inputs = {}; G.phase = 'reveal';
+  steps.forEach((s, idx) => { if (s.t === 'sweep' && s.sweepFeathers) s.sweepFeathers.forEach(f => G.marks.push({ turn: G.turn, idx, room: s.room, furn: f.furn, k: 'w', presence: 0, feathers: [f.color], white: 0, chirp: 0 })); });
+  steps.forEach((s, idx) => { if (s.t === 'search' && !s.found) G.marks.push({ turn: G.turn, idx, room: s.room, furn: s.furn, k: s.k, presence: s.presence, feathers: s.feathers, white: s.white, chirp: s.chirp }); });
+  return steps;
+}
+// 公開用の文（forBirds=true のとき、罠の家具を伏せない＝使わない。罠は常に部屋までを公開）
+function stepText(G, st) {
+  const who = st.t === 'bell' ? G.seekers[st.si].name : pieceLabel(G, st.si + st.k);
+  if (st.t === 'bell') return who + 'が静穏の鈴を鳴らした。';
+  if (st.t === 'search') {
+    const head = who + '：' + furnLabel(G, st.room, st.furn) + 'を探索' + (st.auto ? '（時間切れのためランダム）' : '') + ' → ';
+    if (st.found) return head + '小鳥を' + st.found.length + '羽見つけた！ 探索者陣営 +' + st.found.reduce((a, f) => a + f.pts, 0) + '点';
+    const parts = [];
+    if (st.presence) parts.push('同じ部屋の別の家具に気配（' + st.presence + '羽）');
+    if (st.feathers.length) parts.push('色付きの羽（' + st.feathers.map(c => CJP[c]).join('・') + '）');
+    if (st.white) parts.push('白い羽 ' + st.white + '枚');
+    if (st.chirp) parts.push('隣室から鳴き声 ' + st.chirp + '羽ぶん');
+    return head + (parts.length ? parts.join('、') : '何も見つからなかった（探索ゲージ +1）');
+  }
+  if (st.t === 'sweep') {
+    const head = who + '：一斉探索（' + G.rooms[st.room].name + 'の部屋の家具をすべて探索。次のターンは動けない） → ';
+    if (st.found) return head + '小鳥を' + st.found.length + '羽見つけた！ 探索者陣営 +' + st.found.reduce((a, f) => a + f.pts, 0) + '点';
+    return head + (st.sweepFeathers.length ? '色付きの羽（' + st.sweepFeathers.map(f => CJP[G.rooms[st.room].furn[f.furn].color] + 'の' + G.rooms[st.room].furn[f.furn].kind + 'に' + CJP[f.color]).join('、') + '）' : '何も見つからなかった（探索ゲージ +1）');
+  }
+  if (st.t === 'range') return who + '：範囲魔法 → 小鳥がいるのは ' + (st.rooms.length ? st.rooms.map(r => G.rooms[r].name).join('・') + ' のどこか' : '（盤面に小鳥がいない）');
+  if (st.t === 'track') return who + '：追跡魔法 → ' + (st.moves.length ? st.moves.map(m => G.rooms[m.from].name + '→' + G.rooms[m.to].name).join('、') : '移動の跡はなかった');
+  if (st.t === 'block') return who + '：道の封鎖 → ' + G.rooms[st.room].name + 'と' + G.rooms[st.to].name + 'の間の道を塞いだ';
+  if (st.t === 'trap') return who + '：' + G.rooms[st.room].name + 'の部屋に鳥かごの罠を置いた';
+  return '';
+}
+function endTurn(G) {
+  const alive = G.birds.filter(b => b.status === 'active');
+  alive.forEach(b => { b.track[G.turn] = { room: b.pos.room, furn: b.pos.furn, ev: b.lastEv || 'move' }; });
+  G.score.bird += alive.length;
+  G.log.push({ turn: G.turn, text: 'ターン' + G.turn + '終了。逃げている小鳥 ' + alive.length + '羽 → 小鳥陣営 +' + alive.length + '点' });
+  if (G.turn >= G.cfg.turns) { G.phase = 'end'; return true; }
+  G.turn++; G.phase = 'bird'; G.inputs = {}; return false;
+}
+function winner(G) { if (G.resigned) return G.resigned === 'bird' ? 'seeker' : 'bird'; return G.score.bird > G.score.seeker ? 'bird' : G.score.bird < G.score.seeker ? 'seeker' : 'draw'; }
+// 降参：同じ陣営の全員が選んだときだけ成立する
+function setSurrender(G, pid, on) {
+  if (G.phase === 'end' || G.turn < 1) return false;
+  if (!G.surrender) G.surrender = {};
+  if (on) G.surrender[pid] = true; else delete G.surrender[pid];
+  const team = pid[0] === 's' ? G.seekers : G.birds;
+  if (team.every(p => G.surrender[p.pid])) { G.resigned = pid[0] === 's' ? 'seeker' : 'bird'; G.phase = 'end'; G.log.push({ turn: G.turn, text: (G.resigned === 'seeker' ? '探索者陣営' : '小鳥陣営') + 'が降参しました。' }); return true; }
+  return false;
+}
+
+const Core = { COLORS, CJP, KINDS, PIECE_JP, makeRand, pick, shuffle, roomName, neighbors, dist, isBlocked, newGame, legalFurn, allSpots, birdMoves, has,
+  setSurrender, resolveColorCheck, setDislikes, validDis, randDis, pieceStuck, startGame, prepareRevive, canFreeze, resolveBirdPhase, validSeekerInput, resolveSeekerPhase, stepText, pieceLabel, furnLabel, endTurn, winner };
+
+
+// ===== 画面（1台で遊ぶ版）。ルールは Core に任せる =====
+const $ = s => document.querySelector(s);
+const HEX = { red: '#d9534f', blue: '#4a7fd0', yellow: '#e2b93b', green: '#58a55c' };
+const TINT = { red: '#4a2a2c', blue: '#25364f', yellow: '#4a4226', green: '#27402c' };
+let G = null, rand = null, viewer = null, pendingViewer = null;
+let draft = {};            // 入力中の内容（プレイヤーごと）
+let ui = { piece: 'w', mode: null, revealIdx: -1, modal: null, pinMode: false, banner: '', timerSec: 0, timeLeft: {}, tick: null };
+let pins = { seeker: {}, bird: {} };
+let replay = null;
+let memos = {};           // 自分用のメモ（プレイヤーごと。進行には影響しない）
+
+const teamOf = pid => pid && pid[0] === 's' ? 'seeker' : pid && pid[0] === 'b' ? 'bird' : null;
+const seesBirds = () => viewer === 'all' || teamOf(viewer) === 'bird' || (G && G.phase === 'end');
+const seesTrapFurn = () => viewer === 'all' || teamOf(viewer) === 'seeker' || (G && G.phase === 'end');
+function playerName(pid) { const p = G.seekers.concat(G.birds).find(x => x.pid === pid); return p ? p.name : ''; }
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+// ---------- 開始 ----------
+function startFromSetup() {
+  const names = ['n0', 'n1', 'n2', 'n3'].map(id => $('#' + id).value.trim());
+  const size = $('#size').value.split('x').map(Number);
+  const seed = (Date.now() % 2147483647) || 1;
+  rand = Core.makeRand(seed);
+  G = Core.newGame({ rows: size[0], cols: size[1], turns: +$('#turns').value, magic: +$('#magic').value, names, dislikes: +$('#dislikes').value, oneAction: $('#oneAction').value === '1', capPts: Math.max(1, +$('#capPts').value || 1) }, rand);
+  G.cpuBirds = $('#cpuBirds').value === '1'; if (G.cpuBirds) G.birds.forEach((b, i) => { b.name = 'CPUの小鳥' + (i + 1); });
+  ui.timerSec = +$('#timer').value; viewer = null; draft = {}; pins = { seeker: {}, bird: {} }; replay = null; ui.revealIdx = -1; ui.modal = null; memos = {};
+  ui.banner = '部屋の色の確認：小鳥陣営の2人が、順番に自分の画面で配置を確認してください。';
+  $('#setup').style.display = 'none'; $('#game').style.display = 'grid';
+  resetTimers(); clearInterval(ui.tick); ui.tick = setInterval(tick, 1000);
+  if (G.cpuBirds) return cpuStep();
+  render();
+}
+
+// ---------- 制限時間（プレイヤーごと。自分の画面を開いている間だけ減る） ----------
+function phaseLimit() { if (!ui.timerSec) return 0; return G.phase === 'colorcheck' ? 30 : (G.phase === 'bird' || G.phase === 'seeker') ? ui.timerSec : 0; }
+function resetTimers() { ui.timeLeft = {}; const lim = G ? phaseLimit() : 0; if (lim) G.seekers.concat(G.birds).forEach(p => { ui.timeLeft[p.pid] = lim; }); }
+function waitingFor(pid) {
+  if (!G || !pid || pid === 'all') return false;
+  if (G.phase === 'colorcheck') return teamOf(pid) === 'bird' && !(pid in G.agree);
+  if (G.phase === 'bird') return teamOf(pid) === 'bird' && !G.inputs[pid] && birdNeedsInput(birdOf(pid));
+  if (G.phase === 'seeker') return teamOf(pid) === 'seeker' && !G.inputs[pid];
+  return false;
+}
+function tick() {
+  if (!G || !phaseLimit() || !waitingFor(viewer) || $('#cover').style.display === 'flex') return;
+  ui.timeLeft[viewer]--; const el = $('#timerBox'); if (el) el.textContent = '残り ' + Math.max(0, ui.timeLeft[viewer]) + ' 秒';
+  if (ui.timeLeft[viewer] <= 0) timeUp(viewer);
+}
+function timeUp(pid) {
+  const name = playerName(pid); ui.modal = null; ui.mode = null;
+  if (G.phase === 'colorcheck') G.agree[pid] = true;
+  else if (G.phase === 'bird') { const b = birdOf(pid), d = draft[pid]; G.inputs[pid] = (d && (d.t !== 'freeze' || d.piece)) ? d : { t: b.status === 'active' ? 'timeout' : 'none' }; }
+  else if (G.phase === 'seeker') G.inputs[pid] = sDraft(seekerOf(pid));
+  viewer = null; ui.note = name + 'さんは時間切れです。'; maybeAdvance();
+}
+
+// ---------- 画面の切り替え（誰が見ているか） ----------
+function askViewer(pid) {
+  if (pid === viewer) return;
+  if (pid === null || pid === 'all') { viewer = pid; ui.mode = null; ui.pinMode = false; render(); return; }
+  if (G.cpuBirds) { pendingViewer = pid; return confirmViewer(); }
+  pendingViewer = pid; $('#coverName').textContent = playerName(pid); $('#cover').style.display = 'flex';
+}
+function confirmViewer() { viewer = pendingViewer; pendingViewer = null; ui.mode = null; ui.pinMode = false; ui.piece = 'w'; ui.note = ''; $('#cover').style.display = 'none'; render(); }
+function cancelViewer() { pendingViewer = null; $('#cover').style.display = 'none'; }
+
+// ---------- フェーズの進行 ----------
+function doColorCheck() {
+  const ok = Core.resolveColorCheck(G, rand);
+  viewer = viewer === 'all' ? 'all' : null; draft = {};
+  ui.banner = G.phase === 'bird' ? '試合開始！ ターン1：小鳥陣営が移動先を選びます。' : ok ? '部屋の色が決まりました。小鳥陣営は、順番に自分の画面で「苦手な色」を選んでください（制限時間なし）。' : '部屋の色を決め直しました（' + G.rerolls + '回目）。小鳥陣営はもう一度確認してください。';
+  resetTimers(); render();
+}
+function birdNeedsInput(b) { return !(b.status === 'active' && (G.bellActive || Core.birdMoves(G, b).length === 0)); }
+function maybeAdvance() {
+  if (G.phase === 'colorcheck' && G.birds.every(b => b.pid in G.agree)) return doColorCheck();
+  if (G.phase === 'dislike') { render(); return; }
+  if (G.phase === 'bird' && G.birds.every(b => !birdNeedsInput(b) || G.inputs[b.pid])) return doBirdPhase();
+  if (G.phase === 'seeker' && G.seekers.every(s => G.inputs[s.pid])) return doSeekerPhase();
+  render();
+}
+function doBirdPhase() {
+  const ev = Core.resolveBirdPhase(G, rand);
+  viewer = viewer === 'all' ? 'all' : null; draft = {}; ui.mode = null;
+  const parts = ['小鳥陣営の移動が完了しました。'];
+  if (G.bellWas) parts.push('静穏の鈴で、盤面の小鳥は動けませんでした。');
+  ev.forEach(e => {
+    if (e.t === 'freeze') parts.push(Core.pieceLabel(G, e.piece) + 'が足止めされました。');
+    if (e.t === 'revive') parts.push('小鳥が1羽、復活しました。');
+    if (e.t === 'trap') parts.push('鳥かごの罠に小鳥がかかりました！（探索者陣営 +' + e.pts + '点）');
+  });
+  parts.push('探索者陣営が行動を選びます。');
+  ui.banner = parts.join(' '); resetTimers(); if (G.cpuBirds && viewer !== 'all') { viewer = 's0'; ui.piece = 'w'; }
+  render();
+}
+function doSeekerPhase() {
+  Core.resolveSeekerPhase(G, rand);
+  viewer = viewer === 'all' ? 'all' : null; draft = {}; ui.mode = null; ui.revealIdx = -1;
+  ui.banner = '探索者陣営の移動が完了しました。探索の結果を1つずつ公開します。';
+  resetTimers(); nextReveal();
+}
+function nextReveal() {
+  if (ui.revealIdx < G.reveal.length - 1) {
+    ui.revealIdx++; const st = G.reveal[ui.revealIdx];
+    G.log.push({ turn: G.turn, text: Core.stepText(G, st) }); render(); return;
+  }
+  const ended = Core.endTurn(G); ui.revealIdx = -1;
+  if (ended) { ui.banner = '試合終了！'; replay = null; render(); showResult(); return; }
+  ui.banner = 'ターン' + G.turn + '：小鳥陣営が移動先を選びます。' + (G.bellActive ? '（静穏の鈴が鳴っています）' : '');
+  resetTimers(); if (G.cpuBirds) return cpuStep();
+  render();
+}
+
+// ---------- CPUの小鳥（1人で探索者側を試すための相手） ----------
+function botDislikes(color) {
+  // 入れる部屋がいちばん広くつながる選び方をする
+  const n = G.cfg.dislikes; if (!n) return [];
+  const others = Core.COLORS.filter(c => c !== color); const sets = n === 1 ? others.map(c => [c]) : [[others[0], others[1]], [others[0], others[2]], [others[1], others[2]]];
+  let best = null, bestV = -1;
+  sets.forEach(ds => {
+    const ok = G.rooms.map(r => !ds.includes(r.color)); const seen = new Set(); let big = 0;
+    G.rooms.forEach(r => { if (!ok[r.id] || seen.has(r.id)) return; let cnt = 0; const st = [r.id]; seen.add(r.id); while (st.length) { const x = st.pop(); cnt++; Core.neighbors(G, x).forEach(y => { if (ok[y] && !seen.has(y)) { seen.add(y); st.push(y); } }); } big = Math.max(big, cnt); });
+    const v = big + rand() * 0.9; if (v > bestV) { bestV = v; best = ds; }
+  });
+  return best.slice().sort();
+}
+function botRisk(room) {
+  // 次の探索者の移動で、その部屋に来られるコマが多いほど危ない
+  let risk = 0;
+  G.seekers.forEach((s, si) => ['w', 'a'].forEach(k => { const d = Core.dist(G, s[k].room, room); const stuck = Core.pieceStuck(G, si, k); if (d === 0) risk += 3; else if (d === 1 && !stuck) risk += 1.5; else if (d === 2 && k === 'w' && s.magic.boost > 0 && !stuck) risk += 0.5; }));
+  if (G.traps.some(t => t.room === room)) risk += 2.5;
+  return risk;
+}
+function botPickSpot(spots, me) {
+  let best = null, bestV = -1e9;
+  spots.forEach(sp => {
+    let v = -botRisk(sp.room) + rand() * 1.2;
+    if (G.birds.some(o => o !== me && o.status === 'active' && o.pos && o.pos.room === sp.room)) v -= o_same(sp, me);
+    if (v > bestV) { bestV = v; best = sp; }
+  });
+  return best;
+}
+function o_same(sp, me) { return G.birds.some(o => o !== me && o.status === 'active' && o.pos.room === sp.room && o.pos.furn === sp.furn) ? 2 : 0.6; }
+function botBirdInputs() {
+  G.birds.forEach((b, bi) => {
+    if (b.status === 'active') { const mv = Core.birdMoves(G, b); if (mv.length && !G.bellActive) G.inputs[b.pid] = Object.assign({ t: 'move' }, botPickSpot(mv, b)); return; }
+    const left = G.cfg.turns - G.turn + 1;
+    if (left >= 3 && rand() < 0.8) {
+      const pf = Core.prepareRevive(G, bi, rand); const dis = botDislikes(pf.color);
+      const spots = Core.allSpots(G, { color: pf.color, height: pf.height, dis });
+      G.inputs[b.pid] = Object.assign({ t: 'revive', dis }, botPickSpot(spots, b)); return;
+    }
+    const mate = G.birds.find(o => o !== b && o.status === 'active'); let pick = null, pd = 99;
+    if (mate && b.freezeLeft > 0) G.seekers.forEach((s, si) => ['w', 'a'].forEach(k => { const id = si + k, d = Core.dist(G, s[k].room, mate.pos.room); if (Core.canFreeze(G, b, id) && d >= 1 && d < pd) { pd = d; pick = id; } }));
+    G.inputs[b.pid] = pick && pd <= 2 ? { t: 'freeze', piece: pick } : { t: 'none' };
+  });
+}
+function cpuStep() {
+  if (G.phase === 'colorcheck') { G.birds.forEach(b => { G.agree[b.pid] = true; }); Core.resolveColorCheck(G, rand); }
+  if (G.phase === 'dislike') G.birds.forEach((b, bi) => Core.setDislikes(G, bi, botDislikes(b.prefs.color), rand));
+  if (G.phase === 'bird') { botBirdInputs(); return doBirdPhase(); }
+  render();
+}
+
+// ---------- 入力：小鳥 ----------
+function birdOf(pid) { return G.birds.find(b => b.pid === pid); }
+function birdTargets(b) {
+  const d = draft[b.pid] || {};
+  if (b.status === 'active') return Core.birdMoves(G, b);
+  if (d.t === 'revive' && Core.validDis(b.pending.color, d.dis, G.cfg.dislikes)) return Core.allSpots(G, { color: b.pending.color, height: b.pending.height, dis: d.dis });
+  return [];
+}
+// ---------- 入力：探索者 ----------
+function seekerOf(pid) { return G.seekers.find(s => s.pid === pid); }
+function sDraft(s) {
+  if (!draft[s.pid]) draft[s.pid] = { bell: false, w: { to: s.w.room, boost: false, act: null }, a: { to: s.a.room, boost: false, act: null } };
+  return draft[s.pid];
+}
+function reachable(s, k) {
+  const si = G.seekers.indexOf(s), me = s[k], d = sDraft(s)[k];
+  if (Core.pieceStuck(G, si, k)) return [me.room];
+  const max = (k === 'w' && d.boost && s.magic.boost > 0) ? 2 : 1;
+  return G.rooms.map(r => r.id).filter(r => Core.dist(G, me.room, r) <= max);
+}
+
+// ---------- クリック処理 ----------
+function onRoomClick(room) {
+  if (replay) return;
+  if (ui.pinMode && teamOf(viewer)) { const t = teamOf(viewer); if (pins[t][room]) delete pins[t][room]; else pins[t][room] = true; return render(); }
+  if (G.phase === 'bird' && teamOf(viewer) === 'bird') {
+    const b = birdOf(viewer); if (G.inputs[b.pid]) return;
+    const spots = birdTargets(b).filter(x => x.room === room);
+    if (spots.length) openRoom(room, { legal: spots.map(x => x.furn), purpose: 'bird' });
+    return;
+  }
+  if (G.phase === 'seeker' && teamOf(viewer) === 'seeker') {
+    const s = seekerOf(viewer); if (G.inputs[s.pid]) return; const d = sDraft(s);
+    if (ui.mode === 'block') {
+      if (Core.neighbors(G, d.w.to).includes(room)) { d.w.act = { t: 'block', to: room }; ui.mode = null; if (G.cfg.oneAction) d.a.act = null; }
+      return render();
+    }
+    const k = ui.piece;
+    if (reachable(s, k).includes(room)) {
+      if (d[k].to !== room) { d[k].to = room; d[k].act = null; }
+      return openRoom(room, { purpose: 'seeker', piece: k, sub: 'search' });
+    }
+    return render();
+  }
+}
+function openRoom(room, opts) { ui.modal = Object.assign({ room }, opts); render(); }
+function closeRoom() { ui.modal = null; render(); }
+function onFurnPick(furn) {
+  const m = ui.modal; if (!m) return;
+  if (m.legal && !m.legal.includes(furn)) return;
+  if (m.purpose === 'bird') {
+    const b = birdOf(viewer);
+    draft[b.pid] = b.status === 'active' ? { t: 'move', room: m.room, furn } : Object.assign({}, draft[b.pid], { t: 'revive', room: m.room, furn });
+  } else if (m.purpose === 'seeker') {
+    const s = seekerOf(viewer), d = sDraft(s);
+    d[m.piece].act = { t: m.sub === 'trap' ? 'trap' : 'search', furn };
+    if (G.cfg.oneAction) d[m.piece === 'w' ? 'a' : 'w'].act = null; else if (m.piece === 'w' && !d.a.act) ui.piece = 'a';
+  }
+  ui.modal = null; render();
+}
+function toggleDis(list, c) { const a = (list || []).slice(); const i = a.indexOf(c); if (i >= 0) a.splice(i, 1); else if (a.length < G.cfg.dislikes) a.push(c); return a; }
+function memoOf(pid) { if (!memos[pid]) memos[pid] = { text: '', grid: {} }; return memos[pid]; }
+function memoHtml(pid) {
+  const m = memoOf(pid); const cls = v => v === 1 ? ' m1' : v === 2 ? ' m2' : ''; const mark = v => v === 1 ? '○' : v === 2 ? '×' : '';
+  let h = '<div class="card memo"><div class="small">自分用のメモ（ほかの人には見えません。ゲームの進行には関係しません）</div><textarea id="memoText" rows="4" placeholder="気づいたことを自由に書けます">' + esc(m.text) + '</textarea>';
+  if (teamOf(pid) === 'seeker') {
+    h += '<div class="small">推理メモ：押すたびに「○ 候補 → × ちがう → なし」と切り替わります。</div>';
+    G.birds.forEach((b, bi) => {
+      h += '<div class="mrow"><b>小鳥 ' + (bi + 1) + '羽目</b>';
+      [['fc', '好きな色', Core.COLORS.map(c => [c, Core.CJP[c], HEX[c]])], ['fh', '好きな高さ', [1, 2, 3, 4].map(n => [n, String(n), null])], ['dc', '苦手な色', Core.COLORS.map(c => [c, Core.CJP[c], HEX[c]])]].filter(x => x[0] !== 'dc' || G.cfg.dislikes > 0).forEach(([key, label, opts]) => {
+        h += '<div class="mline"><span class="mlabel">' + label + '</span>';
+        opts.forEach(([v, text, col]) => { const id = bi + '|' + key + '|' + v, st = m.grid[id] || 0; h += '<button class="mbtn' + cls(st) + '" data-act="memo" data-arg="' + id + '">' + (col ? '<span class="dot" style="background:' + col + '"></span>' : '') + text + '<i>' + mark(st) + '</i></button>'; });
+        h += '</div>';
+      });
+      h += '</div>';
+    });
+  }
+  return h + '</div>';
+}
+function surrenderHtml(pid) {
+  if (!G || G.turn < 1 || G.phase === 'end') return '';
+  const team = teamOf(pid) === 'seeker' ? G.seekers : G.birds; const sur = G.surrender || {}; const n = team.filter(p => sur[p.pid]).length;
+  return '<div class="card sur"><button class="' + (sur[pid] ? 'on' : '') + '" data-act="surrender">' + (sur[pid] ? '降参を取り消す' : '🏳 降参を選ぶ') + '</button><div class="small">同じ陣営の全員が降参を選んだときだけ、降参が成立します（いま ' + n + ' / ' + team.length + ' 人）。</div></div>';
+}
+function act(name, arg) {
+  if (name === 'surrender') {
+    const done = Core.setSurrender(G, viewer, !(G.surrender && G.surrender[viewer]));
+    if (done) { ui.modal = null; ui.mode = null; viewer = null; ui.banner = '降参が成立しました。試合終了。'; render(); return showResult(); }
+    return render();
+  }
+  if (name === 'memo') { const m = memoOf(viewer); m.grid[arg] = ((m.grid[arg] || 0) + 1) % 3; return render(); }
+  if (name === 'agree') { G.agree[viewer] = arg; viewer = null; return maybeAdvance(); }
+  if (name === 'disPick') { const b = birdOf(viewer); if (G.phase === 'dislike') { draft[b.pid] = { dis: toggleDis((draft[b.pid] || {}).dis, arg) }; } else { const d = draft[b.pid]; d.dis = toggleDis(d.dis, arg); delete d.room; delete d.furn; } return render(); }
+  if (name === 'disSubmit') { const b = birdOf(viewer); const started = Core.setDislikes(G, G.birds.indexOf(b), draft[b.pid].dis, rand); delete draft[b.pid]; viewer = null; if (started) { ui.banner = '試合開始！ ターン1：小鳥陣営が移動先を選びます。'; resetTimers(); } return render(); }
+  if (name === 'birdSubmit') { const b = birdOf(viewer); G.inputs[b.pid] = draft[b.pid] || { t: 'none' }; viewer = null; return maybeAdvance(); }
+  if (name === 'birdChoice') {
+    const b = birdOf(viewer);
+    if (arg === 'revive') { Core.prepareRevive(G, G.birds.indexOf(b), rand); draft[b.pid] = { t: 'revive', dis: [] }; }
+    else if (arg === 'none') draft[b.pid] = { t: 'none' };
+    else if (arg === 'freeze') draft[b.pid] = { t: 'freeze', piece: null };
+    return render();
+  }
+  if (name === 'freezePiece') { draft[viewer] = { t: 'freeze', piece: arg }; return render(); }
+  const s = seekerOf(viewer), d = s && sDraft(s);
+  if (name === 'piece') { ui.piece = arg; ui.mode = null; return render(); }
+  if (name === 'boost') { d.w.boost = !d.w.boost; if (!d.w.boost && Core.dist(G, s.w.room, d.w.to) > 1) { d.w.to = s.w.room; d.w.act = null; } return render(); }
+  if (name === 'chooseAct') { ui.piece = arg; return openRoom(d[arg].to, { purpose: 'seeker', piece: arg, sub: 'search' }); }
+  if (name === 'sub') { ui.modal.sub = arg; return render(); }
+  if (name === 'range' || name === 'track' || name === 'sweep') { d.w.act = { t: name }; ui.mode = null; ui.modal = null; if (G.cfg.oneAction) d.a.act = null; else if (!d.a.act) ui.piece = 'a'; return render(); }
+  if (name === 'block') { ui.mode = 'block'; ui.piece = 'w'; ui.modal = null; return render(); }
+  if (name === 'bell') { d.bell = !d.bell; return render(); }
+  if (name === 'seekerSubmit') { G.inputs[s.pid] = d; viewer = null; if (G.cpuBirds) { const nx = G.seekers.find(x => !G.inputs[x.pid]); if (nx) { viewer = nx.pid; ui.piece = 'w'; ui.mode = null; } } return maybeAdvance(); }
+  if (name === 'pin') { ui.pinMode = !ui.pinMode; return render(); }
+}
+
+// ---------- 描画：盤面 ----------
+function marksFor(room) {
+  return G.marks.filter(m => m.room === room && !(G.phase === 'reveal' && m.turn === G.turn && m.idx > ui.revealIdx));
+}
+function renderBoard() {
+  const cols = G.cfg.cols; let h = '<div class="board" style="grid-template-columns:repeat(' + cols + ',1fr)">';
+  let targets = [], blockTargets = [];
+  if (!replay && viewer && viewer !== 'all') {
+    if (G.phase === 'bird' && teamOf(viewer) === 'bird' && !G.inputs[viewer]) targets = Array.from(new Set(birdTargets(birdOf(viewer)).map(x => x.room)));
+    if (G.phase === 'seeker' && teamOf(viewer) === 'seeker' && !G.inputs[viewer]) {
+      const s = seekerOf(viewer);
+      if (ui.mode === 'block') blockTargets = Core.neighbors(G, sDraft(s).w.to); else targets = reachable(s, ui.piece);
+    }
+  }
+  const shownScoreStep = G.phase === 'reveal' && ui.revealIdx >= 0 ? G.reveal[ui.revealIdx] : null;
+  G.rooms.forEach(rm => {
+    const cls = ['room']; if (targets.includes(rm.id)) cls.push('target'); if (blockTargets.includes(rm.id)) cls.push('target2');
+    h += '<div class="' + cls.join(' ') + '" style="background:' + TINT[rm.color] + ';border-color:' + HEX[rm.color] + '" data-room="' + rm.id + '">';
+    h += '<div class="rhead"><b>' + rm.name + '</b><span class="rcol" style="background:' + HEX[rm.color] + '">' + Core.CJP[rm.color] + 'の部屋</span>';
+    const t = teamOf(viewer); if (t && pins[t][rm.id]) h += '<span class="pin">📍</span>';
+    if (G.traps.some(tr => tr.room === rm.id)) h += '<span class="tag trap" title="この部屋に鳥かごの罠">罠</span>';
+    h += '</div><div class="furns">';
+    const ms = marksFor(rm.id);
+    rm.furn.forEach((f, fi) => {
+      h += '<div class="furn"><div class="fbar" style="height:' + (8 + f.height * 9) + 'px;background:' + HEX[f.color] + '"></div><div class="flabel">' + f.kind + '<br>高さ' + f.height + '</div><div class="fmarks">';
+      if (seesTrapFurn() && G.traps.some(tr => tr.room === rm.id && tr.furn === fi)) h += '<span class="tag trap" title="ここに罠">罠</span>';
+      if (!replay && seesBirds()) G.birds.forEach((b, bi) => { if (b.status === 'active' && b.pos && b.pos.room === rm.id && b.pos.furn === fi) h += '<span class="birdm" title="' + esc(b.name) + '">🐤' + (bi + 1) + '</span>'; });
+      if (!replay) ms.filter(m => m.furn === fi).forEach(m => {
+        const old = m.turn !== G.turn || G.phase === 'bird' || G.phase === 'seeker';
+        const o = old ? ' old' : '';
+        m.feathers.forEach(c => { h += '<span class="tag' + o + '" style="background:' + HEX[c] + '" title="T' + m.turn + ' の探索で見つけた色付きの羽">羽' + (old ? '<small>T' + m.turn + '</small>' : '') + '</span>'; });
+        if (!old) {
+          if (m.white) h += '<span class="tag wht" title="白い羽">白羽×' + m.white + '</span>';
+          if (m.chirp) h += '<span class="mk" title="隣室から鳴き声">♪×' + m.chirp + '</span>';
+          if (m.presence) h += '<span class="mk" title="同じ部屋に気配">気配×' + m.presence + '</span>';
+        }
+      });
+      h += '</div></div>';
+    });
+    h += '</div><div class="pieces">';
+    if (!replay) G.seekers.forEach((s, si) => ['w', 'a'].forEach(k => {
+      let room = s[k].room, ghost = false;
+      if (viewer === s.pid && G.phase === 'seeker' && !G.inputs[s.pid] && draft[s.pid] && draft[s.pid][k].to !== room) { if (draft[s.pid][k].to === rm.id) ghost = true; }
+      if (room === rm.id || ghost) h += '<span class="piece s' + si + (ghost ? ' ghost' : '') + (Core.pieceStuck(G, si, k) ? ' frozen' : '') + '">' + (k === 'w' ? '🧙' : '🧑') + (si + 1) + (Core.pieceStuck(G, si, k) ? '❄' : '') + (ghost ? '→' : '') + '</span>';
+    }));
+    h += '</div>';
+    Core.neighbors(G, rm.id).forEach(nb => { if (Core.isBlocked(G, rm.id, nb)) { const dir = nb === rm.id + 1 ? 'r' : nb === rm.id - 1 ? 'l' : nb > rm.id ? 'd' : 'u'; h += '<span class="blk ' + dir + '">✕</span>'; } });
+    h += '</div>';
+  });
+  h += '</div><svg id="trail"></svg>';
+  return { html: h, step: shownScoreStep };
+}
+
+// ---------- 描画：横のパネル ----------
+function prefsHtml(p) {
+  return '<div class="prefs">好きな色 <b style="color:' + HEX[p.color] + '">' + Core.CJP[p.color] + '</b> ／ 好きな高さ <b>' + p.height + '</b> ／ 苦手な色 ' + (p.dis && p.dis.length ? p.dis.map(c => '<b style="color:' + HEX[c] + '">' + Core.CJP[c] + '</b>').join('・') : G.cfg.dislikes === 0 ? 'なし' : '（これから選ぶ）') + '</div>';
+}
+function disButtons(color, dis) {
+  let h = '<div class="choices">';
+  Core.COLORS.filter(c => c !== color).forEach(c => { h += '<button class="' + ((dis || []).includes(c) ? 'on' : '') + '" data-act="disPick" data-arg="' + c + '"><span class="dot" style="background:' + HEX[c] + '"></span>' + Core.CJP[c] + '</button>'; });
+  return h + '</div>';
+}
+function panelHtml() {
+  if (replay) return replayPanel();
+  let h = '';
+  const t = teamOf(viewer);
+  if (G.phase === 'end') return '<p>試合は終了しました。</p><button data-fn="showResult">結果を見る</button> <button data-fn="startReplay">答え合わせを見る</button>';
+  if (G.phase === 'reveal') {
+    const st = G.reveal[ui.revealIdx];
+    h += '<div class="card big"><div class="small">探索結果の公開 ' + (ui.revealIdx + 1) + ' / ' + G.reveal.length + '</div><p>' + esc(Core.stepText(G, st)) + '</p>';
+    h += '<button class="primary" data-fn="nextReveal">' + (ui.revealIdx < G.reveal.length - 1 ? '次の結果へ' : 'ターンを終える') + '</button></div>';
+    if (t) h += memoHtml(viewer) + surrenderHtml(viewer); else h += '<div class="small">メモを書くときは、上のボタンで自分の画面を開いてください。</div>';
+    return h;
+  }
+  if (!viewer) {
+    h += '<div class="card"><p>' + (G.cpuBirds ? '上の「探索者1」「探索者2」のボタンを押して、行動を選んでください。' : '操作するプレイヤーを上のボタンで選んでください。ほかの人は画面を見ないでください。') + '</p>';
+    h += '<ul class="status">';
+    if (G.phase === 'colorcheck') G.birds.forEach(b => { h += '<li>' + esc(b.name) + '：' + (b.pid in G.agree ? '確認済み' : '未確認') + '</li>'; });
+    if (G.phase === 'dislike') G.birds.forEach(b => { h += '<li>' + esc(b.name) + '：苦手な色を' + (b.disSet ? '選択済み' : '選んでいません') + '</li>'; });
+    if (G.phase === 'bird') G.birds.forEach(b => { h += '<li>' + esc(b.name) + '：' + (G.inputs[b.pid] ? '入力済み' : birdNeedsInput(b) ? '入力待ち' : '入力なし（動けません）') + '</li>'; });
+    if (G.phase === 'seeker') G.seekers.forEach(s => { h += '<li>' + esc(s.name) + '：' + (G.inputs[s.pid] ? '入力済み' : '入力待ち') + '</li>'; });
+    h += '</ul>';
+    if (G.phase === 'bird' && G.birds.every(b => !birdNeedsInput(b))) h += '<button class="primary" data-fn="doBirdPhase">小鳥陣営のターンを進める</button>';
+    h += '</div>'; return h;
+  }
+  if (viewer === 'all') { h += '<div class="card"><p>確認用の表示です。すべての情報が見えています。入力は各プレイヤーの画面で行います。</p>'; G.birds.forEach(b => { h += '<div class="small">' + esc(b.name) + '（' + (b.status === 'active' ? '逃走中' : '捕まっている') + '）</div>' + prefsHtml(b.prefs); }); h += '</div>'; return h; }
+  // --- 小鳥の画面 ---
+  if (t === 'bird') {
+    const b = birdOf(viewer);
+    h += '<div class="card"><div class="small">あなたの小鳥（🐤' + (G.birds.indexOf(b) + 1) + '）' + (b.status === 'caught' ? '：捕まっています' : '') + '</div>' + prefsHtml(b.prefs);
+    h += '<div class="small">好きな色か好きな高さの家具にだけ隠れられます。苦手な色の部屋と家具は使えません。</div></div>';
+    G.birds.filter(o => o !== b).forEach(o => { h += '<div class="card"><div class="small">仲間：' + esc(o.name) + '（' + (o.status === 'active' ? '逃走中' : '捕まっている') + '）</div>' + prefsHtml(o.prefs) + '</div>'; });
+    if (G.phase === 'colorcheck') {
+      h += '<div class="card"><p>部屋の色の配置を確認してください。全員が納得すると次へ進みます（決め直しは3回まで。いま' + G.rerolls + '回）。' + (G.cfg.dislikes ? '苦手な色（' + G.cfg.dislikes + '色）は、この後に自分で選びます。' : '') + '</p>';
+      h += b.pid in G.agree ? '<p>回答済みです。</p>' : '<button class="primary" data-act="agree" data-arg="true">この配置でよい</button> <button data-act="agree" data-arg="false">決め直したい</button>';
+      h += '</div>';
+    } else if (G.phase === 'dislike') {
+      h += '<div class="card">';
+      if (b.disSet) h += '<p>苦手な色は選択済みです。</p>';
+      else { const dd = (draft[b.pid] || {}).dis || []; h += '<p>苦手な色を' + G.cfg.dislikes + 'つ選んでください（制限時間なし）。その色の部屋には入れず、その色の家具には隠れられません。</p>' + disButtons(b.prefs.color, dd) + '<button class="primary" data-act="disSubmit"' + (dd.length === G.cfg.dislikes ? '' : ' disabled') + '>決定</button>'; }
+      h += '</div>';
+    } else if (G.phase === 'bird') {
+      h += '<div class="card">';
+      if (G.inputs[b.pid]) h += '<p>入力済みです。</p>';
+      else if (b.status === 'active') {
+        if (G.bellActive) h += '<p>静穏の鈴で止められています。このターンは移動できません。</p>';
+        else if (Core.birdMoves(G, b).length === 0) h += '<p>動ける家具も部屋もありません。このターンはその場にとどまります。</p>';
+        else {
+          const d = draft[b.pid];
+          h += '<p>光っている部屋を選び、隠れる家具を決めてください。同じ家具にはとどまれません。</p>';
+          h += '<p>移動先：<b>' + (d ? esc(Core.furnLabel(G, d.room, d.furn)) : '未選択（時間切れの場合はランダム）') + '</b></p>';
+          h += '<button class="primary" data-act="birdSubmit"' + (d ? '' : ' disabled') + '>決定</button>';
+        }
+      } else {
+        const d = draft[b.pid] || {};
+        h += '<p>捕まっています。行動を1つ選んでください。</p><div class="choices">';
+        h += '<button class="' + (d.t === 'freeze' ? 'on' : '') + '" data-act="birdChoice" data-arg="freeze"' + (b.freezeLeft > 0 ? '' : ' disabled') + '>足止め（残り' + b.freezeLeft + '回）</button>';
+        h += '<button class="' + (d.t === 'none' ? 'on' : '') + '" data-act="birdChoice" data-arg="none">何もしない</button>';
+        h += '<button class="' + (d.t === 'revive' ? 'on' : '') + '" data-act="birdChoice" data-arg="revive">復活</button></div>';
+        if (d.t === 'freeze') {
+          h += '<p>足止めするコマ：</p><div class="choices">';
+          G.seekers.forEach((s, si) => ['w', 'a'].forEach(k => { const id = si + k; h += '<button class="' + (d.piece === id ? 'on' : '') + '" data-act="freezePiece" data-arg="' + id + '"' + (Core.canFreeze(G, b, id) ? '' : ' disabled') + '>' + esc(Core.pieceLabel(G, id)) + '</button>'; }));
+          h += '</div><div class="small">同じコマを続けて足止めすることはできません。</div>';
+        }
+        if (d.t === 'revive') {
+          const disOk = Core.validDis(b.pending.color, d.dis, G.cfg.dislikes);
+          h += '<p>復活後の新しい好み：</p>' + prefsHtml({ color: b.pending.color, height: b.pending.height, dis: d.dis }) + (G.cfg.dislikes ? '<p>① 苦手な色を' + G.cfg.dislikes + 'つ選んでください。</p>' + disButtons(b.pending.color, d.dis) : '');
+          h += disOk ? '<p>② 光っている部屋から、復活する家具を選んでください。<br>復活場所：<b>' + (d.room != null ? esc(Core.furnLabel(G, d.room, d.furn)) : '未選択（決定するとランダム）') + '</b></p>' : '';
+        }
+        const ok = d.t === 'none' || (d.t === 'revive' && Core.validDis(b.pending.color, d.dis, G.cfg.dislikes)) || (d.t === 'freeze' && d.piece);
+        h += '<button class="primary" data-act="birdSubmit"' + (ok ? '' : ' disabled') + '>決定</button>';
+      }
+      h += '</div>';
+    } else h += '<div class="card"><p>探索者陣営が行動を選んでいます。</p></div>';
+  }
+  // --- 探索者の画面 ---
+  if (t === 'seeker') {
+    const s = seekerOf(viewer), si = G.seekers.indexOf(s);
+    if (G.phase === 'colorcheck' || G.phase === 'dislike') h += '<div class="card"><p>小鳥陣営が、部屋の色の確認と苦手な色の選択をしています。</p></div>';
+    else if (G.phase === 'bird') h += '<div class="card"><p>小鳥陣営が移動先を選んでいます。</p></div>';
+    else if (G.inputs[s.pid]) h += '<div class="card"><p>入力済みです。</p></div>';
+    else {
+      const d = sDraft(s);
+      h += '<div class="card"><ol class="steps"><li>下のコマ（魔法使い／弟子）を選ぶ</li><li>盤面の<b>光っている部屋</b>をクリック（今の部屋ならその部屋）</li><li>開いた3Dの部屋で、<b>家具をクリック</b>して探索</li></ol>';
+      ['w', 'a'].forEach(k => {
+        const fr = Core.pieceStuck(G, si, k); const a = d[k].act;
+        let at = (G.cfg.oneAction && d[k === 'w' ? 'a' : 'w'].act) ? '行動なし（移動のみ）' : '<span class="warn">まだ選んでいません</span>';
+        if (a) at = esc(a.t === 'search' ? '探索：' + Core.furnLabel(G, d[k].to, a.furn) : a.t === 'trap' ? '鳥かごの罠：' + Core.furnLabel(G, d[k].to, a.furn) : a.t === 'range' ? '範囲魔法' : a.t === 'track' ? '追跡魔法' : a.t === 'sweep' ? '一斉探索：' + G.rooms[d[k].to].name + 'の部屋' : '道の封鎖：' + G.rooms[d[k].to].name + 'と' + G.rooms[a.to].name + 'の間');
+        h += '<div class="pc ' + (ui.piece === k ? 'sel' : '') + '" data-act="piece" data-arg="' + k + '"><b>' + (k === 'w' ? '🧙 魔法使い' : '🧑 弟子') + '</b>' + (ui.piece === k ? ' <span class="small">← 操作中</span>' : '') + (fr ? ' <span class="warn">❄ このターンは移動できません</span>' : '') +
+          '<div>移動：' + G.rooms[s[k].room].name + ' → <b>' + G.rooms[d[k].to].name + '</b>' + (d[k].to === s[k].room ? '（待機）' : '') + '</div><div>行動：<b>' + at + '</b></div>' +
+          '<button data-act="chooseAct" data-arg="' + k + '">' + G.rooms[d[k].to].name + 'の部屋を開いて行動を選ぶ</button></div>';
+      });
+      h += '<div class="choices"><button class="' + (d.w.boost ? 'on' : '') + '" data-act="boost"' + (s.magic.boost > 0 && !Core.pieceStuck(G, si, 'w') ? '' : ' disabled') + '>魔法使いの加速：2部屋先まで移動（残り' + s.magic.boost + '）</button></div>';
+      if (ui.mode === 'block') h += '<p class="warn">道の封鎖：塞ぐ道の先の部屋（水色の枠）をクリックしてください。</p>';
+      if (G.gauge >= 4) h += '<label class="bell"><input type="checkbox" data-act="bell"' + (d.bell ? ' checked' : '') + '> 🔔 静穏の鈴を鳴らす（次の小鳥の移動を止める）</label>';
+      let miss = ['w', 'a'].filter(k => !d[k].act).map(k => k === 'w' ? '魔法使い' : '弟子');
+      if (G.cfg.oneAction) { miss = miss.length === 2 ? ['どちらか1体'] : []; h += '<p class="small">この試合は「行動できるのは1人1体まで」の設定です。もう1体は移動だけになります（部屋を選んだ後、3Dの部屋を「閉じる」で閉じてください）。</p>'; }
+      if (miss.length) h += '<p class="warn">' + miss.join('と') + 'の行動がまだ決まっていません。</p>';
+      h += '<button class="primary" data-act="seekerSubmit"' + (miss.length ? ' disabled' : '') + '>決定</button></div>';
+    }
+  }
+  if (t) h += '<button class="' + (ui.pinMode ? 'on' : '') + '" data-act="pin">📍 ピンを刺す／外す（同じ陣営にだけ見える）</button>' + memoHtml(viewer) + surrenderHtml(viewer);
+  return h;
+}
+
+// ---------- 描画：全体 ----------
+function render() {
+  if (!G) return;
+  const b = renderBoard();
+  $('#boardWrap').innerHTML = b.html;
+  const sc = b.step ? b.step.score : G.score, gauge = b.step ? b.step.gauge : G.gauge;
+  const phaseJp = { colorcheck: '開始前：部屋の色の確認', dislike: '開始前：苦手な色を選ぶ', bird: '小鳥陣営の入力', seeker: '探索者陣営の入力', reveal: '探索結果の公開', end: '試合終了' }[G.phase];
+  $('#hud').innerHTML = '<span class="turn">TURN ' + Math.max(1, G.turn) + ' / ' + G.cfg.turns + '</span><span class="phase">' + phaseJp + '</span>' +
+    '<span class="score">探索者 <b>' + sc.seeker + '</b> ： <b>' + sc.bird + '</b> 小鳥</span><span class="gauge">探索ゲージ ' + '●'.repeat(gauge) + '○'.repeat(4 - gauge) + '</span>' +
+    (phaseLimit() && waitingFor(viewer) ? '<span id="timerBox" class="timer">残り ' + Math.max(0, ui.timeLeft[viewer]) + ' 秒</span>' : '');
+  let tabs = '<button class="' + (viewer === null ? 'on' : '') + '" data-view="">公開画面</button>';
+  G.seekers.forEach(s => { tabs += '<button class="tS ' + (viewer === s.pid ? 'on' : '') + '" data-view="' + s.pid + '">🧙 ' + esc(s.name) + '</button>'; });
+  if (!G.cpuBirds) G.birds.forEach(x => { tabs += '<button class="tB ' + (viewer === x.pid ? 'on' : '') + '" data-view="' + x.pid + '">🐤 ' + esc(x.name) + '</button>'; });
+  tabs += '<button class="' + (viewer === 'all' ? 'on' : '') + '" data-view="all">' + (G.cpuBirds ? '答えを見る（小鳥の位置が見えます）' : '確認用（全部見える）') + '</button>';
+  $('#tabs').innerHTML = tabs;
+  $('#banner').textContent = ui.banner + (ui.note ? '　' + ui.note : '');
+  $('#panel').innerHTML = panelHtml();
+  $('#log').innerHTML = G.log.slice().reverse().map(l => '<div><span class="lt">T' + l.turn + '</span>' + esc(l.text) + '</div>').join('');
+  renderModal(); if (replay) drawTrail();
+}
+
+// ---------- 3Dの部屋（仮の箱） ----------
+const SLOT = [[0.24, 0.24], [0.76, 0.24], [0.24, 0.76], [0.76, 0.76]];
+function iso(x, y, z, S, cx, cy) { return [cx + (x - y) * S * 0.866, cy + (x + y) * S * 0.5 - z * S]; }
+function shade(hex, f) { const n = parseInt(hex.slice(1), 16); const c = [n >> 16, (n >> 8) & 255, n & 255].map(v => Math.max(0, Math.min(255, Math.round(v * f)))); return 'rgb(' + c.join(',') + ')'; }
+let hitBoxes = [];
+function mix(hex, hex2, t) { const p = h => { const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }; const x = p(hex), y = p(hex2); return 'rgb(' + x.map((v, i) => Math.round(v * (1 - t) + y[i] * t)).join(',') + ')'; }
+function drawRoom(cv, room, m) {
+  const ctx = cv.getContext('2d'), W = cv.width, H = cv.height, S = 290, cx = W / 2, cy = 150; const rm = G.rooms[room];
+  ctx.clearRect(0, 0, W, H);
+  const P = (x, y, z) => iso(x, y, z, S, cx, cy);
+  const poly = (pts, fill, stroke, lw) => { ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); if (fill) { ctx.fillStyle = fill; ctx.fill(); } if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw || 2; ctx.stroke(); } };
+  const wall = HEX[rm.color];
+  poly([P(0, 0, 0), P(1, 0, 0), P(1, 0, 0.5), P(0, 0, 0.5)], mix(wall, '#10161c', 0.45));
+  poly([P(0, 0, 0), P(0, 1, 0), P(0, 1, 0.5), P(0, 0, 0.5)], mix(wall, '#10161c', 0.6));
+  poly([P(0, 0, 0), P(1, 0, 0), P(1, 1, 0), P(0, 1, 0)], '#39414a', '#5a6672');
+  for (let i = 1; i < 4; i++) { ctx.strokeStyle = 'rgba(255,255,255,.06)'; ctx.lineWidth = 1; ctx.beginPath(); let p = P(i / 4, 0, 0), q = P(i / 4, 1, 0); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); p = P(0, i / 4, 0); q = P(1, i / 4, 0); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.stroke(); }
+  hitBoxes = []; const labels = [];
+  [0, 1, 2, 3].forEach(fi => {
+    const f = rm.furn[fi], [x, y] = SLOT[fi], w = 0.125, z = 0.05 + f.height * 0.1;
+    const legal = !m.legal || m.legal.includes(fi); const base = legal ? HEX[f.color] : mix(HEX[f.color], '#2b323a', 0.72);
+    const a = P(x - w, y - w, z), b = P(x + w, y - w, z), c = P(x + w, y + w, z), d = P(x - w, y + w, z);
+    const c0 = P(x + w, y + w, 0), d0 = P(x - w, y + w, 0), b0 = P(x + w, y - w, 0);
+    poly([d, c, c0, d0], mix(base, '#000000', 0.28)); poly([b, c, c0, b0], mix(base, '#000000', 0.45)); poly([a, b, c, d], mix(base, '#ffffff', 0.12));
+    for (let k = 1; k < f.height; k++) { const zz = k * z / f.height; const p1 = P(x - w, y + w, zz), p2 = P(x + w, y + w, zz), p3 = P(x + w, y - w, zz); ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(p1[0], p1[1]); ctx.lineTo(p2[0], p2[1]); ctx.lineTo(p3[0], p3[1]); ctx.stroke(); }
+    if (legal && m.hover === fi) poly([a, b, b0, c0, d0, d], null, '#ffffff', 3);
+    let icons = '';
+    if (seesBirds()) G.birds.forEach((bd, bi) => { if (bd.status === 'active' && bd.pos.room === room && bd.pos.furn === fi) icons += '🐤' + (bi + 1); });
+    if (seesTrapFurn() && G.traps.some(t => t.room === room && t.furn === fi)) icons += '罠';
+    labels.push({ x: (a[0] + c[0]) / 2, y: a[1] - 8, text: Core.CJP[f.color] + 'の' + f.kind + '・高さ' + f.height, legal, icons, cy: (a[1] + c[1]) / 2 });
+    hitBoxes.push({ fi, legal, pts: [a, b, b0, c0, d0, d] });
+  });
+  labels.forEach(l => {
+    ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center'; const tw = ctx.measureText(l.text).width + 14;
+    ctx.fillStyle = 'rgba(10,14,18,.78)'; ctx.beginPath(); ctx.roundRect(l.x - tw / 2, l.y - 17, tw, 22, 8); ctx.fill();
+    ctx.fillStyle = l.legal ? '#ffffff' : '#8793a0'; ctx.fillText(l.text, l.x, l.y - 1);
+    if (l.icons) { ctx.font = 'bold 18px sans-serif'; ctx.fillStyle = '#fff'; ctx.fillText(l.icons, l.x, l.cy + 6); }
+  });
+}
+function inPoly(pt, pts) { let ins = false; for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) { const xi = pts[i][0], yi = pts[i][1], xj = pts[j][0], yj = pts[j][1]; if ((yi > pt[1]) !== (yj > pt[1]) && pt[0] < (xj - xi) * (pt[1] - yi) / (yj - yi) + xi) ins = !ins; } return ins; }
+function hitTest(cv, e) { const r = cv.getBoundingClientRect(); const pt = [(e.clientX - r.left) * cv.width / r.width, (e.clientY - r.top) * cv.height / r.height]; for (let i = hitBoxes.length - 1; i >= 0; i--) if (inPoly(pt, hitBoxes[i].pts)) return hitBoxes[i]; return null; }
+function renderModal() {
+  const el = $('#roomModal'); const m = ui.modal;
+  if (!m) { el.style.display = 'none'; return; }
+  el.style.display = 'flex'; const rm = G.rooms[m.room];
+  const title = m.purpose === 'bird' ? '隠れる家具を選ぶ' : (m.piece === 'w' ? '魔法使い' : '弟子') + (m.sub === 'trap' ? '：罠を置く家具をクリック' : '：探索する家具をクリック');
+  $('#roomTitle').textContent = rm.name + 'の部屋（' + Core.CJP[rm.color] + '）　' + title;
+  let extra = '';
+  if (m.purpose === 'seeker') {
+    const s = seekerOf(viewer), k = m.piece; const oa = sDraft(s)[k === 'w' ? 'a' : 'w'].act; const otherTrap = !!(oa && oa.t === 'trap'); if (otherTrap && m.sub === 'trap') m.sub = 'search';
+    extra += '<div class="choices"><button class="' + (m.sub === 'search' ? 'on' : '') + '" data-act="sub" data-arg="search">家具を探索する</button><button class="' + (m.sub === 'trap' ? 'on' : '') + '" data-act="sub" data-arg="trap"' + (s.trapLeft > 0 && !otherTrap ? '' : ' disabled') + '>鳥かごの罠を置く（残り' + s.trapLeft + '）' + (otherTrap ? '※もう1体が使用中' : '') + '</button></div>';
+    if (k === 'w') {
+      extra += '<div class="small">家具を探索する代わりに、魔法を使うこともできます。</div><div class="choices">';
+      extra += '<button data-act="range"' + (s.magic.range > 0 ? '' : ' disabled') + '>範囲魔法（残り' + s.magic.range + '）</button>';
+      extra += '<button data-act="track"' + (s.magic.track > 0 && G.turn > 1 ? '' : ' disabled') + '>追跡魔法（残り' + s.magic.track + '）</button>';
+      extra += '<button data-act="block"' + (s.magic.block > 0 ? '' : ' disabled') + '>道の封鎖（残り' + s.magic.block + '）</button>';
+      if (G.rooms.length >= 16) extra += '<button data-act="sweep"' + (s.sweepLeft > 0 ? '' : ' disabled') + '>一斉探索（残り' + s.sweepLeft + '。次のターン動けない）</button>';
+      extra += '</div>';
+    }
+  }
+  $('#roomExtra').innerHTML = extra;
+  let list = ''; rm.furn.forEach((f, fi) => { const ok = !m.legal || m.legal.includes(fi); list += '<button data-furn="' + fi + '"' + (ok ? '' : ' disabled') + '><span class="dot" style="background:' + HEX[f.color] + '"></span>' + Core.CJP[f.color] + 'の' + f.kind + '・高さ' + f.height + '</button>'; });
+  $('#roomList').innerHTML = list; drawRoom($('#roomCv'), m.room, m);
+}
+
+// ---------- 結果と答え合わせ ----------
+function showResult() {
+  const w = Core.winner(G);
+  let h = '<h2>' + (w === 'bird' ? '🐤 小鳥陣営の勝ち！' : w === 'seeker' ? '🧙 探索者陣営の勝ち！' : '引き分け') + '</h2>';
+  if (G.resigned) h += '<p>' + (G.resigned === 'seeker' ? '探索者陣営' : '小鳥陣営') + 'が降参しました（ターン' + G.turn + '）。</p>';
+  h += '<p class="rs">探索者陣営 <b>' + G.score.seeker + '</b> 点　：　<b>' + G.score.bird + '</b> 点 小鳥陣営</p><h3>小鳥の好み</h3>';
+  G.birds.forEach((b, bi) => {
+    h += '<div class="card"><b>🐤' + (bi + 1) + ' ' + esc(b.name) + '</b>';
+    b.prefsLog.forEach((p, i) => { h += '<div class="small">' + (i === 0 ? '最初' : 'T' + p.turn + ' に復活した後') + '</div>' + prefsHtml(p.prefs); });
+    const caught = b.track.map((t, i) => t && t.ev === 'caught' ? 'T' + i + '：' + Core.furnLabel(G, t.room, t.furn) : null).filter(Boolean);
+    h += '<div class="small">捕まった場所：' + (caught.length ? esc(caught.join('、')) : 'なし（逃げ切り）') + '</div></div>';
+  });
+  h += '<button class="primary" data-fn="startReplay">答え合わせ（小鳥の道筋）を見る</button> <button data-fn="again">もう一度遊ぶ</button>';
+  $('#resultBody').innerHTML = h; $('#result').style.display = 'flex';
+}
+function again() { $('#result').style.display = 'none'; $('#game').style.display = 'none'; $('#setup').style.display = 'block'; G = null; replay = null; }
+function replayMax() { let m = 0; G.birds.forEach(b => { m = Math.max(m, b.track.length - 1); }); return Math.max(0, Math.min(G.cfg.turns, m)); }
+function startReplay() { $('#result').style.display = 'none'; viewer = 'all'; replay = { t: 0, playing: true, timer: null }; render(); playReplay(); }
+function playReplay() { clearInterval(replay.timer); replay.timer = setInterval(() => { if (!replay || !replay.playing) return; if (replay.t >= replayMax()) { replay.playing = false; render(); return; } replay.t++; render(); }, 1500); }
+function replayPanel() {
+  const t = replay.t; let h = '<div class="card big"><div class="small">小鳥の道のり</div><p><b>TURN ' + t + ' / ' + replayMax() + '</b></p>';
+  G.birds.forEach((b, bi) => {
+    const cur = b.track[t]; let txt;
+    if (!cur) txt = '盤面にいない（捕まっている）';
+    else { const ev = { start: '最初の隠れ場所', caught: 'ここで捕獲', revive: 'ここで復活', bell: '鈴で止められ、とどまった', stuck: '動けず、とどまった', random: '（時間切れのランダム移動）', move: '' }[cur.ev] || ''; const pv = b.track[t - 1]; txt = (pv && cur.ev !== 'revive' ? Core.furnLabel(G, pv.room, pv.furn) + ' → ' : '') + Core.furnLabel(G, cur.room, cur.furn) + (ev ? '　' + ev : ''); }
+    h += '<div class="small" style="color:' + ['#ffd866', '#7fd4ff'][bi % 2] + '">🐤' + (bi + 1) + ' ' + esc(b.name) + '</div><div>' + esc(txt) + '</div>';
+  });
+  h += '<input type="range" id="rpSlider" min="0" max="' + replayMax() + '" value="' + t + '"><div class="choices"><button data-rp="first">最初から再生</button><button data-rp="toggle">' + (replay.playing ? '一時停止' : '再生') + '</button><button data-rp="prev"' + (t <= 0 ? ' disabled' : '') + '>前へ</button><button data-rp="next"' + (t >= replayMax() ? ' disabled' : '') + '>次へ</button><button data-rp="back">結果に戻る</button></div></div>';
+  return h;
+}
+function rp(cmd) {
+  if (cmd === 'first') { replay.t = 0; replay.playing = true; }
+  else if (cmd === 'toggle') { replay.playing = !replay.playing; if (replay.playing && replay.t >= replayMax()) replay.t = 0; }
+  else if (cmd === 'prev') { replay.playing = false; replay.t = Math.max(0, replay.t - 1); }
+  else if (cmd === 'next') { replay.playing = false; replay.t = Math.min(replayMax(), replay.t + 1); }
+  else if (cmd === 'back') { clearInterval(replay.timer); replay = null; render(); return showResult(); }
+  render();
+}
+function furnCenter(room, furn) {
+  const wrap = $('#boardWrap').getBoundingClientRect(); const el = document.querySelectorAll('.room')[room].querySelectorAll('.furn')[furn].getBoundingClientRect();
+  return [el.left - wrap.left + el.width / 2, el.top - wrap.top + el.height / 2];
+}
+function drawTrail() {
+  const svg = $('#trail'); const wrap = $('#boardWrap').getBoundingClientRect(); svg.setAttribute('width', wrap.width); svg.setAttribute('height', wrap.height);
+  let h = ''; const cols = ['#ffd866', '#7fd4ff'];
+  G.birds.forEach((b, bi) => {
+    const col = cols[bi % 2], off = bi * 8 - 4;
+    for (let i = 1; i <= replay.t; i++) {
+      const a = b.track[i - 1], c = b.track[i]; if (!a || !c || c.ev === 'revive') continue;
+      const p = furnCenter(a.room, a.furn), q = furnCenter(c.room, c.furn); const cur = i === replay.t;
+      if (p[0] === q[0] && p[1] === q[1]) { if (cur) h += '<circle cx="' + (p[0] + off) + '" cy="' + p[1] + '" r="20" fill="none" stroke="' + col + '" stroke-width="3" stroke-dasharray="6 5"/>'; continue; }
+      const len = Math.hypot(q[0] - p[0], q[1] - p[1]);
+      h += '<line x1="' + (p[0] + off) + '" y1="' + p[1] + '" x2="' + (q[0] + off) + '" y2="' + q[1] + '" stroke="' + col + '" stroke-width="' + (cur ? 5 : 3) + '" opacity="' + (cur ? 1 : 0.35) + '" stroke-linecap="round"' + (cur ? ' stroke-dasharray="' + len + '" stroke-dashoffset="' + len + '"><animate attributeName="stroke-dashoffset" from="' + len + '" to="0" dur="1.1s" fill="freeze"/></line>' : '/>');
+    }
+    const cur = b.track[replay.t];
+    if (cur) { const q = furnCenter(cur.room, cur.furn); h += '<circle cx="' + (q[0] + off) + '" cy="' + q[1] + '" r="13" fill="' + col + '" stroke="#111" stroke-width="2"/><text x="' + (q[0] + off) + '" y="' + (q[1] + 5) + '" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">' + (cur.ev === 'caught' ? '✕' : bi + 1) + '</text><text x="' + (q[0] + off) + '" y="' + (q[1] - 18) + '" text-anchor="middle" font-size="12" fill="' + col + '">T' + replay.t + '</text>'; }
+  });
+  svg.innerHTML = h;
+}
+
+// ---------- イベントの受け口 ----------
+function showHelp() { $('#help').style.display = 'flex'; }
+function hideHelp() { $('#help').style.display = 'none'; }
+const FN = { showHelp, hideHelp, nextReveal, doBirdPhase, showResult, startReplay, again, closeRoom, confirmViewer, cancelViewer, startFromSetup };
+document.addEventListener('click', e => {
+  const q = sel => e.target.closest(sel);
+  let el;
+  if ((el = q('[data-view]'))) return askViewer(el.dataset.view === '' ? null : el.dataset.view);
+  if ((el = q('[data-fn]'))) return FN[el.dataset.fn]();
+  if ((el = q('[data-rp]'))) return rp(el.dataset.rp);
+  if ((el = q('[data-furn]'))) return onFurnPick(+el.dataset.furn);
+  if ((el = q('[data-act]'))) { if (el.disabled) return; let a = el.dataset.arg; if (a === 'true') a = true; else if (a === 'false') a = false; return act(el.dataset.act, a); }
+  if (e.target.id === 'roomCv') { const hb = hitTest(e.target, e); if (hb && hb.legal) onFurnPick(hb.fi); return; }
+  if ((el = q('[data-room]')) && !q('#roomModal')) return onRoomClick(+el.dataset.room);
+});
+document.addEventListener('mousemove', e => { if (e.target.id !== 'roomCv' || !ui.modal) return; const hb = hitTest(e.target, e); const hv = hb && hb.legal ? hb.fi : null; if (hv !== ui.modal.hover) { ui.modal.hover = hv; drawRoom(e.target, ui.modal.room, ui.modal); e.target.style.cursor = hv != null ? 'pointer' : 'default'; } });
+document.addEventListener('input', e => { if (e.target.id === 'memoText' && teamOf(viewer)) memoOf(viewer).text = e.target.value; });
+document.addEventListener('input', e => { if (e.target.id === 'rpSlider' && replay) { replay.playing = false; replay.t = +e.target.value; render(); } });
+window.addEventListener('resize', () => { if (replay) drawTrail(); });
+
+</script>
+</body>
+</html>
