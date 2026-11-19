@@ -13,6 +13,8 @@ button:hover:not(:disabled){background:#384a5a}button:disabled{opacity:.4;cursor
 button.primary{background:#e8c27a;color:#1b232b;border-color:#e8c27a;font-weight:bold}button.primary:hover:not(:disabled){background:#f2d291}
 button.on{outline:2px solid #e8c27a;background:#3d4f60}
 #setup{max-width:640px;margin:40px auto;padding:24px;background:#1d2832;border-radius:14px}
+#setup .dim,#setup .dim h3,#setup .dim b,#setup .dim .note{font-weight:300;font-size:12px;color:#7d8c99}#setup .dim h3{margin:10px 0 2px}
+#setup button.primary{background:#ff5fa2;border-color:#ff5fa2;color:#fff;font-size:18px;padding:10px 26px}#setup button.primary:hover{background:#ff7db5}
 details{margin:10px 0}summary{cursor:pointer;color:#e8c27a;font-weight:bold;margin-bottom:6px}#setup ul,#setup ol,#help ul,#help ol{margin:4px 0;padding-left:22px}
 #setup label{display:block;margin:10px 0 2px;color:#b9c3cc}#setup input,#setup select{font:inherit;padding:6px 8px;border-radius:6px;border:1px solid #4b5c6b;background:#141c24;color:#e9e4d8;width:100%}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}.note{color:#9fb0bf;font-size:13px}
@@ -69,20 +71,21 @@ aside{display:flex;flex-direction:column;gap:10px;min-width:0}
 <div id="setup">
   <h1>魔法の金糸雀はどこだ？</h1>
   <p class="note">試遊版です。CPUが動かす小鳥2羽を追いかけます（1人用）。あなたは<b>探索者1と探索者2の2人ぶん</b>、合わせて4体（魔法使い2体・弟子2体）を順番に動かします。</p>
-  <details open><summary>遊び方（はじめに読んでください）</summary><h3>目的</h3>
-<p>家具に隠れて逃げる<b>小鳥2羽</b>を、手がかりから推理して捕まえます。全8ターン。小鳥を1羽捕まえると探索者に6点、小鳥は逃げているあいだ毎ターン1点。点の多いほうが勝ちです。</p>
-<h3>ターンの流れ</h3>
-<p>小鳥が移動 → 探索者1の魔法使い → 探索者1の弟子 → 探索者2の魔法使い → 探索者2の弟子、の順に<b>1体ずつ</b>行動します。1体が行動するたびに、すぐ結果が出ます。</p>
-<h3>1体ぶんの操作</h3>
+  <details open><summary>遊び方</summary><div class="dim"><h3>目的</h3>
+<p>家具に隠れて逃げる<b>小鳥2羽</b>を、手がかりから推理して捕まえます。全8ターン。小鳥を1羽捕まえると探索者に6点、小鳥は逃げているあいだ毎ターン1点。点の多いほうが勝ちです。</p></div>
+<div class="dim"><h3>ターンの流れ</h3>
+<p>小鳥が移動 → 探索者1の魔法使い → 探索者1の弟子 → 探索者2の魔法使い → 探索者2の弟子、の順に<b>1体ずつ</b>行動します。1体が行動するたびに、すぐ結果が出ます。</p></div>
+<div class="dim"><h3>1体ぶんの操作</h3>
 <ol><li>盤面の<b>光っている部屋</b>をクリック（移動は1部屋まで。今いる部屋でもよい）</li><li>開いた3Dの部屋で、調べる<b>家具をクリック</b></li><li>「決定」を押すと結果が出る。白く光った所が、その結果の場所</li></ol>
-<p>紫に光るのが魔法使い、緑に光るのが弟子の番です。コマは、最後に調べた家具の前に立ちます。</p>
+<p>紫に光るのが魔法使い、緑に光るのが弟子の番です。コマは、最後に調べた家具の前に立ちます。</p></div>
 <h3>小鳥のきまり</h3>
 <ul><li>隠れるのは「好きな色の家具」か「好きな高さの家具」だけ</li><li>苦手な色（1色）の部屋には入らず、その色の家具にも隠れない</li><li>毎ターン必ず、同じ部屋の別の家具か、上下左右の隣の部屋へ移る</li><li>捕まっても、好みを変えて復活することがある</li></ul>
-<h3>手がかり</h3>
-<ul><li><b>気配</b>：同じ部屋の別の家具に小鳥がいる</li><li><b>色付きの羽</b>：その家具に、前のターン小鳥がいた。羽の色＝その小鳥の好きな色</li><li><b>白い羽</b>（弟子だけ）：前のターン、その部屋に小鳥がいた</li><li><b>鳴き声 ♪</b>（弟子だけ）：隣の部屋に小鳥がいる</li></ul>
-<h3>魔法と道具</h3>
+<div class="dim"><h3>手がかり</h3>
+<ul><li><b>気配</b>：同じ部屋の別の家具に小鳥がいる</li><li><b>色付きの羽</b>：その家具に、前のターン小鳥がいた。羽の色＝その小鳥の好きな色</li><li><b>白い羽</b>（弟子だけ）：前のターン、その部屋に小鳥がいた</li><li><b>鳴き声 ♪</b>（弟子だけ）：隣の部屋に小鳥がいる</li></ul></div>
+<div class="dim"><h3>魔法と道具</h3>
 <ul><li><b>加速</b>：魔法使いが2部屋先まで移動</li><li><b>範囲魔法</b>：小鳥がいる4部屋の範囲がわかる</li><li><b>追跡魔法</b>：小鳥がどの部屋からどの部屋へ移ったかがわかる</li><li><b>道の封鎖</b>：隣の部屋との道を、次の小鳥の移動まで塞ぐ</li><li><b>一斉探索</b>：部屋の家具4つを全部調べる（1回だけ。次のターンは動けない）</li><li><b>鳥かごの罠</b>：家具に置くと、次にそこへ入った小鳥が捕まる（1人1回）</li><li><b>静穏の鈴</b>：何も見つからない探索が4回たまると使える。次の小鳥の移動を止める</li></ul>
-<p class="note">画面右のメモ欄と推理メモは、自由に使えます。「答えを見る」は試合が終わるまで押さないのがおすすめです。</p></details>
+<p class="note">画面右のメモ欄と推理メモは、自由に使えます。「答えを見る」は試合が終わるまで押さないのがおすすめです。</p></div>
+</details>
   <details><summary>設定（そのままで遊べます）</summary>
   <div class="grid2">
     <div><label>探索者1の名前</label><input id="n0" value="探索者1"></div>
