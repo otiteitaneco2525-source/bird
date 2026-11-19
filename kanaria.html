@@ -61,6 +61,17 @@ aside{display:flex;flex-direction:column;gap:10px;min-width:0}
 .small{font-size:12px;color:#9fb0bf}.warn{color:#ffb86b}.prefs{margin:2px 0 6px}
 .choices{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
 .pc{border:1px solid #4b5c6b;border-radius:8px;padding:6px 10px;margin:6px 0;cursor:pointer}.pc.sel{border-color:#e8c27a;background:#263442}
+#guide{grid-column:1/-1}#guide:empty{display:none}
+.guide{border:3px solid #b07cff;border-radius:12px;background:#1d2530;padding:10px 14px;margin:0;box-shadow:0 0 18px rgba(176,124,255,.5)}.guide.aa{border-color:#2fd0a8;box-shadow:0 0 18px rgba(47,208,168,.5)}
+.gwho{font-weight:bold;font-size:15px;color:#d9bcff;display:flex;justify-content:space-between;align-items:center}.guide.aa .gwho{color:#a8ffe6}
+.gstep{font-size:19px;font-weight:bold;color:#fff;margin:6px 0;line-height:1.5}.gnum{display:inline-block;width:30px;height:30px;line-height:30px;text-align:center;border-radius:50%;background:#ff5fa2;color:#fff;margin-right:8px;font-size:17px}
+.gtip{font-size:14px;color:#dfe7ee;background:#2a2414;border-left:3px solid #e8c27a;border-radius:6px;padding:6px 10px;margin-top:6px;line-height:1.6}.gtip b{color:#ffd98a;margin-right:8px}.ghint{font-size:14px;color:#dfe7ee;margin-top:2px}
+.gtoggle{font-size:11px;padding:1px 8px;background:transparent;border:1px solid #4b5c6b;color:#9fb0bf;border-radius:10px;font-weight:normal}
+#roomExtra .gstep{font-size:17px}details.more{margin:4px 0}details.more summary{font-size:12px;color:#7d8c99;font-weight:normal}
+@keyframes gp{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}@keyframes gpr{0%,100%{filter:brightness(1)}50%{filter:brightness(1.45)}}
+body.g1 .room.target{animation:gpr 1s infinite}body.g5 .room.target2{animation:gpr 1s infinite}
+body.g2 #roomList button:not([disabled]){animation:gpr 1s infinite}
+body.g3 button[data-act="seekerSubmit"]:not([disabled]),body.g4 button[data-fn="nextAfterStep"]{animation:gp .9s infinite;box-shadow:0 0 0 3px #ff5fa2,0 0 18px #ff5fa2}
 .lc{background:#e8c27a;color:#1b232b;border-radius:12px;padding:1px 10px;font-weight:bold;font-size:13px}
 .bell{display:block;margin:8px 0;color:#e8c27a}
 .card.actor.aw,.card.result.aw{border:2px solid #b07cff;box-shadow:0 0 16px rgba(176,124,255,.55)}.card.actor.aa,.card.result.aa{border:2px solid #2fd0a8;box-shadow:0 0 16px rgba(47,208,168,.55)}
@@ -83,8 +94,8 @@ aside{display:flex;flex-direction:column;gap:10px;min-width:0}
 <div id="setup">
   <h1>魔法の金糸雀はどこだ？</h1>
   <p class="note">試遊版です。CPUが動かす小鳥2羽を追いかけます（1人用）。あなたは<b>探索者1と探索者2の2人ぶん</b>、合わせて4体（魔法使い2体・弟子2体）を順番に動かします。</p>
-  <details open><summary>遊び方</summary><div class="dim"><h3>目的</h3>
-<p>家具に隠れて逃げる<b>小鳥2羽</b>を、手がかりから推理して捕まえます。全8ターン。小鳥を1羽捕まえると探索者に6点、小鳥は逃げているあいだ毎ターン1点。小鳥が2羽とも捕まって大きく負けているときは、残り3ターン以上あれば「逆転チャンス」が起き、小鳥の点が1ターン2〜3点に増えます。点の多いほうが勝ちです。</p></div>
+  <details><summary>遊び方（読まなくても始められます）</summary><div class="dim"><h3>目的</h3>
+<p>家具に隠れて逃げる<b>小鳥2羽</b>を、手がかりから推理して捕まえます。全8ターン。小鳥を1羽捕まえると探索者に6点、小鳥は逃げているあいだ毎ターン1点。小鳥が2羽とも捕まって大きく負けているときは、残り2ターン以上あれば「逆転チャンス」が起き、小鳥の点が1ターン2〜3点に増えます。点の多いほうが勝ちです。</p></div>
 <div class="dim"><h3>ターンの流れ</h3>
 <p>小鳥が移動 → 探索者1の魔法使い → 探索者1の弟子 → 探索者2の魔法使い → 探索者2の弟子、の順に<b>1体ずつ</b>行動します。1体が行動するたびに、すぐ結果が出ます。</p></div>
 <div class="dim"><h3>1体ぶんの操作</h3>
@@ -120,13 +131,14 @@ aside{display:flex;flex-direction:column;gap:10px;min-width:0}
   <header><h1>魔法の金糸雀はどこだ？</h1><div id="hud"></div><button data-fn="showHelp" style="margin-left:auto">遊び方</button></header>
   <div id="tabs"></div>
   <div id="banner"></div>
+  <div id="guide"></div>
   <main><div id="boardWrap"></div></main>
   <aside><div id="panel"></div><div id="log"></div></aside>
 </div>
 <div class="overlay" id="cover"><div class="dialog"><h2><span id="coverName"></span> さんの画面を開きます</h2><p>ほかの人は画面を見ないでください。</p><button class="primary" data-fn="confirmViewer">表示する</button> <button data-fn="cancelViewer">やめる</button></div></div>
 <div class="overlay" id="roomModal"><div class="dialog"><h2 id="roomTitle"></h2><canvas id="roomCv" width="560" height="470"></canvas><div class="small">家具（箱）をクリックして選びます。暗い家具は選べません。下の一覧からも選べます。3Dモデルは仮の箱です。</div><div id="roomExtra"></div><div id="roomList"></div><button data-fn="closeRoom">閉じる</button></div></div>
 <div class="overlay" id="help"><div class="dialog"><h2>遊び方</h2><h3>目的</h3>
-<p>家具に隠れて逃げる<b>小鳥2羽</b>を、手がかりから推理して捕まえます。全8ターン。小鳥を1羽捕まえると探索者に6点、小鳥は逃げているあいだ毎ターン1点。小鳥が2羽とも捕まって大きく負けているときは、残り3ターン以上あれば「逆転チャンス」が起き、小鳥の点が1ターン2〜3点に増えます。点の多いほうが勝ちです。</p>
+<p>家具に隠れて逃げる<b>小鳥2羽</b>を、手がかりから推理して捕まえます。全8ターン。小鳥を1羽捕まえると探索者に6点、小鳥は逃げているあいだ毎ターン1点。小鳥が2羽とも捕まって大きく負けているときは、残り2ターン以上あれば「逆転チャンス」が起き、小鳥の点が1ターン2〜3点に増えます。点の多いほうが勝ちです。</p>
 <h3>ターンの流れ</h3>
 <p>小鳥が移動 → 探索者1の魔法使い → 探索者1の弟子 → 探索者2の魔法使い → 探索者2の弟子、の順に<b>1体ずつ</b>行動します。1体が行動するたびに、すぐ結果が出ます。</p>
 <h3>1体ぶんの操作</h3>
@@ -461,10 +473,10 @@ function stepText(G, st) {
   return '';
 }
 // 逆転チャンス：小鳥が2羽とも一度は捕まっていて、ふつうに逃げ切っても勝てないとき、
-// 残りターンが lcMinTurns 以上あれば、以後は1羽1ターンにつき n 点（上限 lcCap）。一度決まった n は試合終了まで変わらない。
+// 残りターンが lcMinTurns（初期値2）以上あれば、以後は1羽1ターンにつき n 点（上限 lcCap）。一度決まった n は試合終了まで変わらない。
 function lastChanceCheck(G) {
   const cf = G.cfg; if (cf.lastChance === false || G.lastChance) return null;
-  const R = cf.turns - G.turn + 1, nb = G.birds.length, cap = cf.lcCap || 3, minT = cf.lcMinTurns || 3;
+  const R = cf.turns - G.turn + 1, nb = G.birds.length, cap = cf.lcCap || 3, minT = cf.lcMinTurns || 2;
   if (R < minT || !G.birds.every(b => b.everCaught)) return null;
   if (G.score.bird + nb * R > G.score.seeker) return null;
   const n = Math.min(cap, Math.ceil((G.score.seeker - G.score.bird + 1) / (nb * R)));
@@ -754,7 +766,7 @@ function botBirdInputs() {
   G.birds.forEach((b, bi) => {
     if (b.status === 'active') { const mv = Core.birdMoves(G, b); if (mv.length && !G.bellActive) G.inputs[b.pid] = Object.assign({ t: 'move' }, botPickSpot(mv, b)); return; }
     const left = G.cfg.turns - G.turn + 1;
-    if (left >= 3 && (rand() < 0.8 || G.lastChance)) {
+    if ((left >= 3 && rand() < 0.8) || (G.lastChance && left >= 2)) {
       const pf = Core.prepareRevive(G, bi, rand); const dis = botDislikes(pf.color);
       const spots = Core.allSpots(G, { color: pf.color, height: pf.height, dis });
       G.inputs[b.pid] = Object.assign({ t: 'revive', dis }, botPickSpot(spots, b)); return;
@@ -1068,8 +1080,41 @@ function panelHtml() {
 }
 
 // ---------- 描画：全体 ----------
+// ---------- ガイド（遊びながらルールを覚える。CPUの小鳥を追う1人用で出す） ----------
+const TIPS = [
+  ['小鳥2羽が、どこかの家具に隠れています。隠れている家具を当てると捕獲で、探索者に点が入ります。', '弟子は、隣の部屋の鳴き声と、白い羽（前のターンにその部屋にいた印）も見つけられます。', 'あなたは探索者1と探索者2の2人ぶん、合わせて4体を順番に動かします。', '調べた結果は、右の「わかったこと」と小さい地図に自動で書かれます。'],
+  ['小鳥は毎ターン必ず動きます。行き先は、同じ部屋の別の家具か、隣の部屋です。', '小鳥は「好きな色の家具」か「好きな高さの家具」にしか隠れません。色付きの羽の色が、その小鳥の好きな色です。', '小鳥には苦手な色が1つあり、その色の部屋には入らず、その色の家具にも隠れません。', '地図の🐤（いる）や？（いるかも）の部屋を狙いましょう。×の部屋にはいません。'],
+  ['魔法使いは、家具を調べる代わりに魔法も使えます。部屋を開くと、家具の上にボタンが出ます。', '上の探索ゲージが4つたまると「静穏の鈴」が使え、小鳥の次の移動を止められます。', '小鳥は逃げているあいだ、1羽につき毎ターン1点。全' + '8' + 'ターンが終わって点の多いほうが勝ちです。', '鳥かごの罠は1人1回。置いた家具に小鳥が入ってくると捕まえます。'],
+  ['捕まった小鳥は、好みを変えて復活することがあります。復活したら、また一から推理します。']
+];
+function guideOn() { return !!(G && G.cpuBirds && ui.guide !== false && viewer !== 'all' && !replay && G.phase !== 'end'); }
+function guideStage() {
+  // 1:部屋を選ぶ 2:家具を選ぶ 3:決定を押す 4:結果を読んで次へ 5:封鎖する道を選ぶ
+  if (!guideOn() || G.phase !== 'seeker') return 0;
+  if (ui.step) return 4; if (!myTurn()) return 0;
+  if (ui.mode === 'block') return 5; if (ui.modal) return 2;
+  return aDraft().act ? 3 : 1;
+}
+function guideHtml() {
+  if (!(G && G.cpuBirds) || replay || G.phase === 'end' || viewer === 'all') return '';
+  if (ui.guide === false) return '<button class="gtoggle" data-fn="toggleGuide">ガイドを出す</button>';
+  const st = guideStage(); if (!st) return '';
+  const a = curActor() || ui.step; const k = st === 4 ? ui.step.k : a.k, si = st === 4 ? ui.step.si : a.si;
+  const who = (k === 'w' ? '🧙 ' : '🧑 ') + Core.pieceLabel(G, si + k); const col = k === 'w' ? '紫' : '緑';
+  const idx = st === 4 ? G.actorIdx - 1 : G.actorIdx; const tip = (TIPS[G.turn - 1] || [])[idx];
+  const steps = ['', col + 'に光っている部屋を、1つクリックしてください（いまいる部屋でもOK）', '開いた部屋の中から、調べる家具を1つクリックしてください', '右の「決定」ボタンを押してください（部屋や家具は、押す前なら選び直せます）', '結果が出ました。白く光っている所が結果の場所です。読んだら、右の「次へ」を押してください', '塞ぐ道の先の部屋（水色の枠）をクリックしてください'];
+  let h = '<div class="guide ' + (k === 'w' ? 'aw' : 'aa') + '"><div class="gwho">' + esc(who) + (st === 4 ? ' の結果' : ' の番') + '<button class="gtoggle" data-fn="toggleGuide">ガイドを消す</button></div>';
+  h += '<div class="gstep"><span class="gnum">' + (st === 5 ? '!' : st) + '</span>' + steps[st] + '</div>';
+  if (st === 1 && G.turn >= 2) { const M = amap(); const hot = Object.keys(M.here).concat(Object.keys(M.maybe).filter(r => !M.here[r] && !M.empty[r])).map(Number).filter(r => reachableA(curActor(), aDraft()).includes(r)); if (hot.length) h += '<div class="ghint">迷ったら：' + hot.slice(0, 4).map(r => '<b class="rn">' + G.rooms[r].name + '</b>').join('') + 'の部屋に、小鳥がいるかもしれません。</div>'; }
+  if (tip && (st === 1 || st === 4)) h += '<div class="gtip"><b>ルール</b>' + esc(tip) + '</div>';
+  return h + '</div>';
+}
+function toggleGuide() { ui.guide = ui.guide === false; render(); }
+
 function render() {
   if (!G) return;
+  document.body.className = guideOn() ? 'guide-on g' + guideStage() : '';
+  $('#guide').innerHTML = guideHtml();
   const b = renderBoard();
   $('#boardWrap').innerHTML = b.html;
   const sc = G.score, gauge = G.gauge;
@@ -1135,8 +1180,10 @@ function renderModal() {
   el.style.display = 'flex'; const rm = G.rooms[m.room];
   const title = m.purpose === 'bird' ? '隠れる家具を選ぶ' : (m.piece === 'w' ? '魔法使い' : '弟子') + (m.sub === 'trap' ? '：罠を置く家具をクリック' : '：探索する家具をクリック');
   $('#roomTitle').textContent = rm.name + 'の部屋（' + Core.CJP[rm.color] + '）　' + title;
-  let extra = '';
+  let extra = ''; const simple = guideOn() && G.turn <= 2;
   if (m.purpose === 'seeker') {
+    if (guideOn()) extra += '<div class="gstep"><span class="gnum">2</span>調べる家具を1つクリックしてください（下の絵の箱でも、その下のボタンでもOK）</div>';
+    if (simple) extra += '<details class="more"><summary>ほかの行動（罠・魔法）は慣れてから</summary>';
     const ca2 = curActor(); const s = G.seekers[ca2.si], k = m.piece; const otherTrap = false;
     extra += '<div class="choices"><button class="' + (m.sub === 'search' ? 'on' : '') + '" data-act="sub" data-arg="search">家具を探索する</button><button class="' + (m.sub === 'trap' ? 'on' : '') + '" data-act="sub" data-arg="trap"' + (s.trapLeft > 0 && !otherTrap ? '' : ' disabled') + '>鳥かごの罠を置く（残り' + s.trapLeft + '）' + (otherTrap ? '※もう1体が使用中' : '') + '</button></div>';
     if (k === 'w') {
@@ -1148,6 +1195,7 @@ function renderModal() {
       extra += '</div>';
     }
   }
+  if (m.purpose === 'seeker' && simple) extra += '</details>';
   $('#roomExtra').innerHTML = extra;
   let list = ''; rm.furn.forEach((f, fi) => { const ok = !m.legal || m.legal.includes(fi); list += '<button data-furn="' + fi + '"' + (ok ? '' : ' disabled') + '><span class="dot" style="background:' + HEX[f.color] + '"></span>' + Core.CJP[f.color] + 'の' + f.kind + '・高さ' + f.height + '</button>'; });
   $('#roomList').innerHTML = list; drawRoom($('#roomCv'), m.room, m);
@@ -1216,7 +1264,7 @@ function drawTrail() {
 // ---------- イベントの受け口 ----------
 function showHelp() { $('#help').style.display = 'flex'; }
 function hideHelp() { $('#help').style.display = 'none'; }
-const FN = { showHelp, hideHelp, nextAfterStep, doBirdPhase, showResult, startReplay, again, closeRoom, confirmViewer, cancelViewer, startFromSetup };
+const FN = { toggleGuide, showHelp, hideHelp, nextAfterStep, doBirdPhase, showResult, startReplay, again, closeRoom, confirmViewer, cancelViewer, startFromSetup };
 document.addEventListener('click', e => {
   const q = sel => e.target.closest(sel);
   let el;
