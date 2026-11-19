@@ -61,6 +61,7 @@ aside{display:flex;flex-direction:column;gap:10px;min-width:0}
 .small{font-size:12px;color:#9fb0bf}.warn{color:#ffb86b}.prefs{margin:2px 0 6px}
 .choices{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
 .pc{border:1px solid #4b5c6b;border-radius:8px;padding:6px 10px;margin:6px 0;cursor:pointer}.pc.sel{border-color:#e8c27a;background:#263442}
+.lc{background:#e8c27a;color:#1b232b;border-radius:12px;padding:1px 10px;font-weight:bold;font-size:13px}
 .bell{display:block;margin:8px 0;color:#e8c27a}
 .card.actor.aw,.card.result.aw{border:2px solid #b07cff;box-shadow:0 0 16px rgba(176,124,255,.55)}.card.actor.aa,.card.result.aa{border:2px solid #2fd0a8;box-shadow:0 0 16px rgba(47,208,168,.55)}
 .who{font-size:18px;font-weight:bold;margin-bottom:6px}.aw .who{color:#d9bcff}.aa .who{color:#a8ffe6}
@@ -83,7 +84,7 @@ aside{display:flex;flex-direction:column;gap:10px;min-width:0}
   <h1>魔法の金糸雀はどこだ？</h1>
   <p class="note">試遊版です。CPUが動かす小鳥2羽を追いかけます（1人用）。あなたは<b>探索者1と探索者2の2人ぶん</b>、合わせて4体（魔法使い2体・弟子2体）を順番に動かします。</p>
   <details open><summary>遊び方</summary><div class="dim"><h3>目的</h3>
-<p>家具に隠れて逃げる<b>小鳥2羽</b>を、手がかりから推理して捕まえます。全8ターン。小鳥を1羽捕まえると探索者に6点、小鳥は逃げているあいだ毎ターン1点。点の多いほうが勝ちです。</p></div>
+<p>家具に隠れて逃げる<b>小鳥2羽</b>を、手がかりから推理して捕まえます。全8ターン。小鳥を1羽捕まえると探索者に6点、小鳥は逃げているあいだ毎ターン1点。小鳥が2羽とも捕まって大きく負けているときは、残り3ターン以上あれば「逆転チャンス」が起き、小鳥の点が1ターン2〜3点に増えます。点の多いほうが勝ちです。</p></div>
 <div class="dim"><h3>ターンの流れ</h3>
 <p>小鳥が移動 → 探索者1の魔法使い → 探索者1の弟子 → 探索者2の魔法使い → 探索者2の弟子、の順に<b>1体ずつ</b>行動します。1体が行動するたびに、すぐ結果が出ます。</p></div>
 <div class="dim"><h3>1体ぶんの操作</h3>
@@ -125,7 +126,7 @@ aside{display:flex;flex-direction:column;gap:10px;min-width:0}
 <div class="overlay" id="cover"><div class="dialog"><h2><span id="coverName"></span> さんの画面を開きます</h2><p>ほかの人は画面を見ないでください。</p><button class="primary" data-fn="confirmViewer">表示する</button> <button data-fn="cancelViewer">やめる</button></div></div>
 <div class="overlay" id="roomModal"><div class="dialog"><h2 id="roomTitle"></h2><canvas id="roomCv" width="560" height="470"></canvas><div class="small">家具（箱）をクリックして選びます。暗い家具は選べません。下の一覧からも選べます。3Dモデルは仮の箱です。</div><div id="roomExtra"></div><div id="roomList"></div><button data-fn="closeRoom">閉じる</button></div></div>
 <div class="overlay" id="help"><div class="dialog"><h2>遊び方</h2><h3>目的</h3>
-<p>家具に隠れて逃げる<b>小鳥2羽</b>を、手がかりから推理して捕まえます。全8ターン。小鳥を1羽捕まえると探索者に6点、小鳥は逃げているあいだ毎ターン1点。点の多いほうが勝ちです。</p>
+<p>家具に隠れて逃げる<b>小鳥2羽</b>を、手がかりから推理して捕まえます。全8ターン。小鳥を1羽捕まえると探索者に6点、小鳥は逃げているあいだ毎ターン1点。小鳥が2羽とも捕まって大きく負けているときは、残り3ターン以上あれば「逆転チャンス」が起き、小鳥の点が1ターン2〜3点に増えます。点の多いほうが勝ちです。</p>
 <h3>ターンの流れ</h3>
 <p>小鳥が移動 → 探索者1の魔法使い → 探索者1の弟子 → 探索者2の魔法使い → 探索者2の弟子、の順に<b>1体ずつ</b>行動します。1体が行動するたびに、すぐ結果が出ます。</p>
 <h3>1体ぶんの操作</h3>
@@ -459,13 +460,27 @@ function stepText(G, st) {
   if (st.t === 'trap') return who + '：' + G.rooms[st.room].name + 'の部屋に鳥かごの罠を置いた';
   return '';
 }
+// 逆転チャンス：小鳥が2羽とも一度は捕まっていて、ふつうに逃げ切っても勝てないとき、
+// 残りターンが lcMinTurns 以上あれば、以後は1羽1ターンにつき n 点（上限 lcCap）。一度決まった n は試合終了まで変わらない。
+function lastChanceCheck(G) {
+  const cf = G.cfg; if (cf.lastChance === false || G.lastChance) return null;
+  const R = cf.turns - G.turn + 1, nb = G.birds.length, cap = cf.lcCap || 3, minT = cf.lcMinTurns || 3;
+  if (R < minT || !G.birds.every(b => b.everCaught)) return null;
+  if (G.score.bird + nb * R > G.score.seeker) return null;
+  const n = Math.min(cap, Math.ceil((G.score.seeker - G.score.bird + 1) / (nb * R)));
+  if (n < 2) return null;
+  G.lastChance = { turn: G.turn, n };
+  G.log.push({ turn: G.turn, text: '逆転チャンス！ このあと、逃げている小鳥は1羽1ターンにつき ' + n + '点。' });
+  return G.lastChance;
+}
 function endTurn(G) {
   const alive = G.birds.filter(b => b.status === 'active');
   alive.forEach(b => { b.track[G.turn] = { room: b.pos.room, furn: b.pos.furn, ev: b.lastEv || 'move' }; });
-  G.score.bird += alive.length;
-  G.log.push({ turn: G.turn, text: 'ターン' + G.turn + '終了。逃げている小鳥 ' + alive.length + '羽 → 小鳥陣営 +' + alive.length + '点' });
+  const per = G.lastChance ? G.lastChance.n : 1, pts = alive.length * per;
+  G.score.bird += pts;
+  G.log.push({ turn: G.turn, text: 'ターン' + G.turn + '終了。逃げている小鳥 ' + alive.length + '羽' + (per > 1 ? ' × ' + per + '点' : '') + ' → 小鳥陣営 +' + pts + '点' });
   if (G.turn >= G.cfg.turns) { G.phase = 'end'; return true; }
-  G.turn++; G.phase = 'bird'; G.inputs = {}; return false;
+  G.turn++; G.phase = 'bird'; G.inputs = {}; lastChanceCheck(G); return false;
 }
 function winner(G) { if (G.resigned) return G.resigned === 'bird' ? 'seeker' : 'bird'; return G.score.bird > G.score.seeker ? 'bird' : G.score.bird < G.score.seeker ? 'seeker' : 'draw'; }
 // 降参：同じ陣営の全員が選んだときだけ成立する
@@ -479,7 +494,7 @@ function setSurrender(G, pid, on) {
 }
 
 const Core = { COLORS, CJP, KINDS, PIECE_JP, makeRand, pick, shuffle, roomName, neighbors, dist, isBlocked, newGame, legalFurn, allSpots, birdMoves, has,
-  setSurrender, resolveColorCheck, setDislikes, validDis, randDis, pieceStuck, startGame, prepareRevive, canFreeze, resolveBirdPhase, seekerOrder, validPieceInput, seekerAct, resolveSeekerPhase, stepText, pieceLabel, furnLabel, endTurn, winner };
+  setSurrender, resolveColorCheck, setDislikes, validDis, randDis, pieceStuck, startGame, prepareRevive, canFreeze, resolveBirdPhase, seekerOrder, validPieceInput, seekerAct, resolveSeekerPhase, stepText, pieceLabel, furnLabel, endTurn, lastChanceCheck, winner };
 
 
 // ===== 画面（1台で遊ぶ版）。ルールは Core に任せる =====
@@ -699,6 +714,7 @@ function nextAfterStep() {
   }
   const ended = Core.endTurn(G);
   if (ended) { ui.banner = '試合終了！'; replay = null; viewer = viewer === 'all' ? 'all' : null; render(); return showResult(); }
+  if (G.lastChance && G.lastChance.turn === G.turn) fx('revive', '逆転チャンス！', 'このあと、逃げている小鳥は1羽1ターンにつき ' + G.lastChance.n + '点。小鳥を捕まえれば止められます');
   ui.banner = 'ターン' + G.turn + '：小鳥陣営が移動先を選びます。' + (G.bellActive ? '（静穏の鈴が鳴っています）' : '');
   resetTimers(); if (G.cpuBirds) return cpuStep();
   viewer = viewer === 'all' ? 'all' : null; render();
@@ -738,7 +754,7 @@ function botBirdInputs() {
   G.birds.forEach((b, bi) => {
     if (b.status === 'active') { const mv = Core.birdMoves(G, b); if (mv.length && !G.bellActive) G.inputs[b.pid] = Object.assign({ t: 'move' }, botPickSpot(mv, b)); return; }
     const left = G.cfg.turns - G.turn + 1;
-    if (left >= 3 && rand() < 0.8) {
+    if (left >= 3 && (rand() < 0.8 || G.lastChance)) {
       const pf = Core.prepareRevive(G, bi, rand); const dis = botDislikes(pf.color);
       const spots = Core.allSpots(G, { color: pf.color, height: pf.height, dis });
       G.inputs[b.pid] = Object.assign({ t: 'revive', dis }, botPickSpot(spots, b)); return;
@@ -1059,7 +1075,7 @@ function render() {
   const sc = G.score, gauge = G.gauge;
   const phaseJp = { colorcheck: '開始前：部屋の色の確認', dislike: '開始前：苦手な色を選ぶ', bird: '小鳥陣営の入力', seeker: '探索者陣営の行動', reveal: '探索結果の公開', end: '試合終了' }[G.phase];
   $('#hud').innerHTML = '<span class="turn">TURN ' + Math.max(1, G.turn) + ' / ' + G.cfg.turns + '</span><span class="phase">' + phaseJp + '</span>' +
-    '<span class="score">探索者 <b>' + sc.seeker + '</b> ： <b>' + sc.bird + '</b> 小鳥</span><span class="gauge">探索ゲージ ' + '●'.repeat(gauge) + '○'.repeat(4 - gauge) + '</span>' +
+    '<span class="score">探索者 <b>' + sc.seeker + '</b> ： <b>' + sc.bird + '</b> 小鳥</span><span class="gauge">探索ゲージ ' + '●'.repeat(gauge) + '○'.repeat(4 - gauge) + '</span>' + (G.lastChance ? '<span class="lc">逆転チャンス中：小鳥 1羽1ターン ' + G.lastChance.n + '点</span>' : '') +
     (phaseLimit() && waitingFor(viewer) ? '<span id="timerBox" class="timer">残り ' + fmtTime(timeNow()) + '</span>' : '');
   let tabs = '<button class="' + (viewer === null ? 'on' : '') + '" data-view="">公開画面</button>';
   const ca = curActor(); const turnPid = ca && !ui.step ? actorPid(ca) : null;
