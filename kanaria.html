@@ -104,7 +104,7 @@ body.g3 button[data-act="seekerSubmit"]:not([disabled]),body.g4 button[data-fn="
 <h3>小鳥のきまり</h3>
 <ul><li>隠れるのは「好きな色の家具」か「好きな高さの家具」だけ</li><li>苦手な色（1色）の部屋には入らず、その色の家具にも隠れない</li><li>毎ターン必ず、同じ部屋の別の家具か、上下左右の隣の部屋へ移る</li><li>捕まっても、好みを変えて復活することがある</li></ul>
 <div class="dim"><h3>手がかり</h3>
-<ul><li><b>気配</b>：同じ部屋の別の家具に小鳥がいる</li><li><b>色付きの羽</b>：その家具に、前のターン小鳥がいた。羽の色＝その小鳥の好きな色</li><li><b>白い羽</b>（弟子だけ）：前のターン、その部屋に小鳥がいた</li><li><b>鳴き声 ♪</b>（弟子だけ）：隣の部屋に小鳥がいる</li></ul></div>
+<ul><li><b>気配</b>：同じ部屋の別の家具に小鳥がいる</li><li><b>色付きの羽</b>：その家具に、前のターン小鳥がいた。羽の色＝その小鳥の好きな色</li><li><b>白い羽</b>（魔法使いも弟子も）：前のターン、その部屋に小鳥がいた</li><li><b>鳴き声 ♪</b>（弟子だけ）：隣の部屋に小鳥がいる</li></ul></div>
 <div class="dim"><h3>魔法と道具</h3>
 <ul><li><b>加速</b>：魔法使いが2部屋先まで移動</li><li><b>範囲魔法</b>：小鳥がいる4部屋の範囲がわかる</li><li><b>追跡魔法</b>：小鳥がどの部屋からどの部屋へ移ったかがわかる</li><li><b>道の封鎖</b>：隣の部屋との道を、次の小鳥の移動まで塞ぐ</li><li><b>一斉探索</b>：部屋の家具4つを全部調べる（1回だけ。次のターンは動けない）</li><li><b>鳥かごの罠</b>：家具に置くと、次にそこへ入った小鳥が捕まる（1人1回）</li><li><b>静穏の鈴</b>：何も見つからない探索が4回たまると使える。次の小鳥の移動を止める</li></ul>
 <p class="note">画面右のメモ欄と推理メモは、自由に使えます。「答えを見る」は試合が終わるまで押さないのがおすすめです。</p></div>
@@ -147,7 +147,7 @@ body.g3 button[data-act="seekerSubmit"]:not([disabled]),body.g4 button[data-fn="
 <h3>小鳥のきまり</h3>
 <ul><li>隠れるのは「好きな色の家具」か「好きな高さの家具」だけ</li><li>苦手な色（1色）の部屋には入らず、その色の家具にも隠れない</li><li>毎ターン必ず、同じ部屋の別の家具か、上下左右の隣の部屋へ移る</li><li>捕まっても、好みを変えて復活することがある</li></ul>
 <h3>手がかり</h3>
-<ul><li><b>気配</b>：同じ部屋の別の家具に小鳥がいる</li><li><b>色付きの羽</b>：その家具に、前のターン小鳥がいた。羽の色＝その小鳥の好きな色</li><li><b>白い羽</b>（弟子だけ）：前のターン、その部屋に小鳥がいた</li><li><b>鳴き声 ♪</b>（弟子だけ）：隣の部屋に小鳥がいる</li></ul>
+<ul><li><b>気配</b>：同じ部屋の別の家具に小鳥がいる</li><li><b>色付きの羽</b>：その家具に、前のターン小鳥がいた。羽の色＝その小鳥の好きな色</li><li><b>白い羽</b>（魔法使いも弟子も）：前のターン、その部屋に小鳥がいた</li><li><b>鳴き声 ♪</b>（弟子だけ）：隣の部屋に小鳥がいる</li></ul>
 <h3>魔法と道具</h3>
 <ul><li><b>加速</b>：魔法使いが2部屋先まで移動</li><li><b>範囲魔法</b>：小鳥がいる4部屋の範囲がわかる</li><li><b>追跡魔法</b>：小鳥がどの部屋からどの部屋へ移ったかがわかる</li><li><b>道の封鎖</b>：隣の部屋との道を、次の小鳥の移動まで塞ぐ</li><li><b>一斉探索</b>：部屋の家具4つを全部調べる（1回だけ。次のターンは動けない）</li><li><b>鳥かごの罠</b>：家具に置くと、次にそこへ入った小鳥が捕まる（1人1回）</li><li><b>静穏の鈴</b>：何も見つからない探索が4回たまると使える。次の小鳥の移動を止める</li></ul>
 <p class="note">画面右のメモ欄と推理メモは、自由に使えます。「答えを見る」は試合が終わるまで押さないのがおすすめです。</p><button class="primary" data-fn="hideHelp">閉じる</button></div></div>
@@ -403,11 +403,11 @@ function seekerAct(G, si, k, src, rand) {
     else {
       st.presence = G.birds.filter(b => b.status === 'active' && b.pos.room === room).length;
       st.feathers = prevSnap.filter(x => x.prev.room === room && x.prev.furn === act.furn).map(x => x.color);
+      st.white = prevSnap.filter(x => x.prev.room === room).length;   // 白い羽は魔法使いも弟子も見つけられる
       if (k === 'a') {
-        st.white = prevSnap.filter(x => x.prev.room === room).length;
         const nb = neighbors(G, room);
-        st.chirp = G.birds.filter(b => b.status === 'active' && nb.includes(b.pos.room)).length;
-      } else { st.white = 0; st.chirp = 0; }
+        st.chirp = G.birds.filter(b => b.status === 'active' && nb.includes(b.pos.room)).length;   // 鳴き声は弟子だけ
+      } else st.chirp = 0;
       st.empty = !st.presence && !st.feathers.length && !st.white && !st.chirp;
       if (st.empty) G.gauge = Math.min(4, G.gauge + 1);
     }
@@ -623,13 +623,13 @@ function noteStep(st) {
     else L.push('いま' + rn + 'の部屋に小鳥はいない。');
     if (st.presence) M.here[st.room] = st.presence; else M.empty[st.room] = 1;
     if (st.feathers.length || st.white) M.prev[st.room] = Math.max(st.white || 0, st.feathers.length);
-    if (st.k === 'a') {
+    {
       const others = st.white - st.feathers.length;
       if (st.white && others > 0) { L.push('【白い羽】前のターン、' + rn + 'の部屋のほかの家具に小鳥が' + others + '羽いた。' + (dis ? 'その小鳥の苦手な色は' + Core.CJP[rm.color] + 'ではない。' : '')); if (dis) autoRec(null, [rm.color], null, true); }
       if (!st.white) L.push('前のターン、' + rn + 'の部屋に小鳥はいなかった。');
       if (st.white && !st.presence && !G.bellWas) { L.push('前のターンはここにいて、いまはいない → 隣の部屋（' + nb + '）へ移った。'); nbs.forEach(r => { M.maybe[r] = 1; }); }
-      L.push(st.chirp ? '【鳴き声】いま隣の部屋（' + nb + '）のどこかに小鳥が' + st.chirp + '羽いる。' : 'いま隣の部屋（' + nb + '）に小鳥はいない。');
-      nbs.forEach(r => { if (st.chirp) M.maybe[r] = 1; else M.empty[r] = 1; });
+      if (st.k === 'a') L.push(st.chirp ? '【鳴き声】いま隣の部屋（' + nb + '）のどこかに小鳥が' + st.chirp + '羽いる。' : 'いま隣の部屋（' + nb + '）に小鳥はいない。');
+      if (st.k === 'a') nbs.forEach(r => { if (st.chirp) M.maybe[r] = 1; else M.empty[r] = 1; });
     }
   }
   if (st.t === 'sweep') { (st.sweepFeathers || []).forEach(f => featherLines(st.room, f.furn, f.color, L)); L.push('いま' + RN(st.room) + 'の部屋に小鳥はいない。'); amap().empty[st.room] = 1; if ((st.sweepFeathers || []).length) amap().prev[st.room] = st.sweepFeathers.length; }
@@ -1082,7 +1082,7 @@ function panelHtml() {
 // ---------- 描画：全体 ----------
 // ---------- ガイド（遊びながらルールを覚える。CPUの小鳥を追う1人用で出す） ----------
 const TIPS = [
-  ['小鳥2羽が、どこかの家具に隠れています。隠れている家具を当てると捕獲で、探索者に点が入ります。', '弟子は、隣の部屋の鳴き声と、白い羽（前のターンにその部屋にいた印）も見つけられます。', 'あなたは探索者1と探索者2の2人ぶん、合わせて4体を順番に動かします。', '調べた結果は、右の「わかったこと」と小さい地図に自動で書かれます。'],
+  ['小鳥2羽が、どこかの家具に隠れています。隠れている家具を当てると捕獲で、探索者に点が入ります。', '弟子だけは、隣の部屋の鳴き声も聞けます。白い羽（前のターンにその部屋に小鳥がいた印）は、魔法使いも弟子も見つけられます。', 'あなたは探索者1と探索者2の2人ぶん、合わせて4体を順番に動かします。', '調べた結果は、右の「わかったこと」と小さい地図に自動で書かれます。'],
   ['小鳥は毎ターン必ず動きます。行き先は、同じ部屋の別の家具か、隣の部屋です。', '小鳥は「好きな色の家具」か「好きな高さの家具」にしか隠れません。色付きの羽の色が、その小鳥の好きな色です。', '小鳥には苦手な色が1つあり、その色の部屋には入らず、その色の家具にも隠れません。', '地図の🐤（いる）や？（いるかも）の部屋を狙いましょう。×の部屋にはいません。'],
   ['魔法使いは、家具を調べる代わりに魔法も使えます。部屋を開くと、家具の上にボタンが出ます。', '上の探索ゲージが4つたまると「静穏の鈴」が使え、小鳥の次の移動を止められます。', '小鳥は逃げているあいだ、1羽につき毎ターン1点。全' + '8' + 'ターンが終わって点の多いほうが勝ちです。', '鳥かごの罠は1人1回。置いた家具に小鳥が入ってくると捕まえます。'],
   ['捕まった小鳥は、好みを変えて復活することがあります。復活したら、また一から推理します。']
