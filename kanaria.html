@@ -43,7 +43,8 @@ header{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:cen
 .room.focus{box-shadow:0 0 0 5px #ffffff,0 0 30px 8px rgba(255,255,255,.75);z-index:2}.furn.focus .fbar{outline:4px solid #fff;box-shadow:0 0 14px 4px #fff}.furn.focus .flabel{color:#fff;font-weight:bold}
 .rhead{display:flex;align-items:center;gap:6px;margin-bottom:4px}.rhead b{font-size:18px}.rcol{font-size:11px;border-radius:10px;padding:0 8px;color:#111;font-weight:bold}
 .furns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;align-items:end;min-height:86px;overflow:hidden}
-.furn{position:relative;text-align:center;min-width:0}.fbar{width:70%;margin:0 auto;border-radius:4px 4px 0 0;border:1px solid rgba(0,0,0,.45)}
+.furn{position:relative;text-align:center;min-width:0}
+.board.nh .furns{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 4px;align-items:start;min-height:0;padding:6px;overflow:visible}.board.nh .furn{padding:2px 0;border-radius:8px}.board.nh .furn.focus{outline:4px solid #fff;box-shadow:0 0 14px 4px #fff}.board.nh .fmarks{min-height:18px}.board.nh .room{min-height:0}.fbar{width:70%;margin:0 auto;border-radius:4px 4px 0 0;border:1px solid rgba(0,0,0,.45)}
 .flabel{font-size:10px;line-height:1.25;color:#d5dbe0;white-space:nowrap}.hshort{display:none}.fmarks{overflow-wrap:anywhere}.pieces{display:flex;flex-wrap:wrap;gap:2px}.rhead{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px}.kicon{display:inline-block;max-width:100%;aspect-ratio:1;vertical-align:middle;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;filter:drop-shadow(0 0 1px rgba(0,0,0,.9)) brightness(1.15)}.fmarks{min-height:20px;font-size:12px;line-height:1.2}
 .mk{display:inline-block;background:rgba(0,0,0,.45);border-radius:6px;padding:0 3px;margin:1px}.mk.old{opacity:.55}.mk.white{color:#fff}
 .birdm{background:#e8c27a;color:#111;border-radius:8px;padding:0 3px;font-weight:bold}
@@ -102,7 +103,7 @@ body.g3 button[data-act="seekerSubmit"]:not([disabled]),body.g4 button[data-fn="
   <h1>魔法の金糸雀はどこだ？</h1>
   <div class="minibox">
     <h2>ミニ対戦（2人・同じ画面で交代）</h2>
-    <p class="note">探索者1人（魔法使いと弟子の2体）と、小鳥1羽の対戦です。盤面は3×3、全5ターン。小鳥は好きな色の家具にだけ隠れ、毎ターン道でつながった隣の部屋へ動きます。使える魔法は、魔法使いの「加速」（2部屋先まで移動。2回）だけです。<b>小鳥を捕まえたら探索者の勝ち、5ターン逃げ切れば小鳥の勝ち</b>です。自分の番でないときは、画面を見ないでください。</p>
+    <p class="note">探索者1人（魔法使いと弟子の2体）と、小鳥1羽の対戦です。盤面は3×3、全5ターン。小鳥には苦手な色が2つあり、その色の部屋には入らず、その色の家具にも隠れません。使える魔法は、魔法使いの「加速」（2部屋先まで移動。2回）だけです。<b>小鳥を捕まえたら探索者の勝ち、5ターン逃げ切れば小鳥の勝ち</b>です。自分の番でないときは、画面を見ないでください。</p>
     <div class="row"><div><label>探索者役の名前</label><input id="mn0" value="探索者"></div><div><label>小鳥役の名前</label><input id="mn1" value="小鳥"></div></div>
     <button class="primary" data-fn="startMini">ミニ対戦を始める</button>
     <div class="netbox">
@@ -257,7 +258,7 @@ function legalFurn(G, prefs, room) {
   const rm = G.rooms[room];
   if (prefs.dis.includes(rm.color)) return [];
   const out = [];
-  rm.furn.forEach((f, i) => { if (!prefs.dis.includes(f.color) && (f.color === prefs.color || (!G.cfg.noHeight && f.height === prefs.height))) out.push(i); });   // noHeight：好きな色の家具にだけ隠れる
+  rm.furn.forEach((f, i) => { if (!prefs.dis.includes(f.color) && (G.cfg.anyFurn || f.color === prefs.color || (!G.cfg.noHeight && f.height === prefs.height))) out.push(i); });   // noHeight：好きな色の家具にだけ隠れる
   return out;
 }
 function allSpots(G, prefs) {
@@ -297,7 +298,8 @@ function resolveColorCheck(G, rand) {
 function setDislikes(G, bi, dis, rand) {
   const b = G.birds[bi];
   const n = G.cfg.dislikes;
-  b.prefs.dis = validDis(b.prefs.color, dis, n) ? dis.slice().sort() : randDis(rand, b.prefs.color, n); b.disSet = true;
+  const fc = G.cfg.anyFurn ? null : b.prefs.color;   // anyFurn：好きな色がないので、どの色でも苦手に選べる
+  b.prefs.dis = validDis(fc, dis, n) ? dis.slice().sort() : randDis(rand, fc, n); b.disSet = true;
   if (G.birds.every(x => x.disSet)) { startGame(G, rand); return true; }
   return false;
 }
@@ -514,7 +516,7 @@ function stepText(G, st) {
     if (st.found) return head + '小鳥を' + st.found.length + '羽見つけた！ 探索者陣営 +' + st.found.reduce((a, f) => a + f.pts, 0) + '点';
     const parts = [];
     if (st.presence) parts.push('同じ部屋の別の家具に気配（' + st.presence + '羽）');
-    if (st.feathers.length) parts.push('色付きの羽（' + st.feathers.map(c => CJP[c]).join('・') + '）');
+    if (st.feathers.length) parts.push(G.cfg.anyFurn ? '羽（前のターン、小鳥はこの家具にいた）' : '色付きの羽（' + st.feathers.map(c => CJP[c]).join('・') + '）');
     if (st.white) parts.push('白い羽 ' + st.white + '枚');
     if (st.chirp) parts.push('隣室から鳴き声 ' + st.chirp + '羽ぶん');
     return head + (parts.length ? parts.join('、') : '何も見つからなかった（探索ゲージ +1）');
@@ -610,7 +612,7 @@ function netReq(method, path, body) {
 }
 function newMiniGame() {
   const seed = 1 + Math.floor(Math.random() * 2147483646); rand = Core.makeRand(seed);
-  const g = Core.newGame({ rows: 3, cols: 3, turns: 5, noHeight: true, magic: 0, seekers: 1, birds: 1, names: ['探索者', '小鳥'], dislikes: 1, capPts: 1, noTrap: true, noBell: true, mini: true, lastChance: false, birdSkill: 0, birdFly: 0, magicSet: { boost: 2 }, kinds: ['ソファ', 'ランプ', '机', '戸棚'] }, rand);
+  const g = Core.newGame({ rows: 3, cols: 3, turns: 5, noHeight: true, anyFurn: true, magic: 0, seekers: 1, birds: 1, names: ['探索者', '小鳥'], dislikes: 2, capPts: 1, noTrap: true, noBell: true, mini: true, lastChance: false, birdSkill: 0, birdFly: 0, magicSet: { boost: 2 }, kinds: ['ソファ', 'ランプ', '机', '戸棚'] }, rand);
   g.cpuBirds = false; g.agree[g.birds[0].pid] = true; Core.resolveColorCheck(g, rand);
   g.gid = 'g' + seed; g.rseed = 1 + Math.floor(rand() * 2147483646);
   return g;
@@ -704,7 +706,7 @@ window.addEventListener('load', () => { const q = new URLSearchParams(location.s
 function startMini() {
   const seed = (Date.now() % 2147483647) || 1; rand = Core.makeRand(seed);
   const names = [$('#mn0').value.trim() || '探索者', $('#mn1').value.trim() || '小鳥'];
-  G = Core.newGame({ rows: 3, cols: 3, turns: 5, noHeight: true, magic: 0, seekers: 1, birds: 1, names, dislikes: 1, capPts: 1, noTrap: true, noBell: true, mini: true, lastChance: false, birdSkill: 0, birdFly: 0, magicSet: { boost: 2 }, kinds: ['ソファ', 'ランプ', '机', '戸棚'] }, rand);
+  G = Core.newGame({ rows: 3, cols: 3, turns: 5, noHeight: true, anyFurn: true, magic: 0, seekers: 1, birds: 1, names, dislikes: 2, capPts: 1, noTrap: true, noBell: true, mini: true, lastChance: false, birdSkill: 0, birdFly: 0, magicSet: { boost: 2 }, kinds: ['ソファ', 'ランプ', '机', '戸棚'] }, rand);
   G.cpuBirds = false; ui.startFn = startMini; ui.guide = true;
   ui.timerSec = 0; viewer = null; draft = {}; pins = { seeker: {}, bird: {} }; replay = null; auto = { notes: [], recs: [], era: 0 }; ui.step = null; ui.modal = null; ui.note = ''; memos = {};
   G.agree[G.birds[0].pid] = true; Core.resolveColorCheck(G, rand);   // 部屋の色の確認は省く
@@ -793,6 +795,7 @@ function autoRec(id, notDis, height, past) { auto.recs.push({ turn: G.turn, era:
 function autoEvent(text) { auto.era++; auto.notes.push({ turn: G.turn, who: '', lines: [text], ev: true }); }
 function featherLines(room, furn, c, L) {
   const rm = G.rooms[room], f = rm.furn[furn]; const dis = G.cfg.dislikes > 0;
+  if (G.cfg.anyFurn) { L.push('【羽】小鳥は前のターン、この家具にいた。' + (dis ? '苦手な色は ' + cj([rm.color, f.color]) + ' ではない。' : '')); autoRec(null, dis ? [rm.color, f.color] : [], null, true); return; }
   let s = '【' + Core.CJP[c] + 'の羽】好きな色が' + Core.CJP[c] + 'の小鳥が、前のターンこの家具にいた。';
   if (f.color !== c) s += '家具は' + Core.CJP[f.color] + 'なので、色ではなく高さで選んでいる → 好きな高さは' + f.height + '。';
   if (dis) s += '苦手な色は ' + cj([c, rm.color, f.color]) + ' ではない。';
@@ -1054,7 +1057,7 @@ function memoHtml(pid) {
     h += '<div class="small">推理メモ：押すたびに「○ 候補 → × ちがう → なし」と切り替わります。</div>';
     G.birds.forEach((b, bi) => {
       h += '<div class="mrow"><b>小鳥 ' + (bi + 1) + '羽目</b>';
-      [['fc', '好きな色', Core.COLORS.map(c => [c, Core.CJP[c], HEX[c]])], ['fh', '好きな高さ', [1, 2, 3, 4].map(n => [n, String(n), null])], ['dc', '苦手な色', Core.COLORS.map(c => [c, Core.CJP[c], HEX[c]])]].filter(x => !(G.cfg.noHeight && x[0] === 'fh')).filter(x => x[0] !== 'dc' || G.cfg.dislikes > 0).forEach(([key, label, opts]) => {
+      [['fc', '好きな色', Core.COLORS.map(c => [c, Core.CJP[c], HEX[c]])], ['fh', '好きな高さ', [1, 2, 3, 4].map(n => [n, String(n), null])], ['dc', '苦手な色', Core.COLORS.map(c => [c, Core.CJP[c], HEX[c]])]].filter(x => !(G.cfg.noHeight && x[0] === 'fh') && !(G.cfg.anyFurn && x[0] === 'fc')).filter(x => x[0] !== 'dc' || G.cfg.dislikes > 0).forEach(([key, label, opts]) => {
         h += '<div class="mline"><span class="mlabel">' + label + '</span>';
         opts.forEach(([v, text, col]) => { const id = bi + '|' + key + '|' + v, st = m.grid[id] || 0; h += '<button class="mbtn' + cls(st) + '" data-act="memo" data-arg="' + id + '">' + (col ? '<span class="dot" style="background:' + col + '"></span>' : '') + text + '<i>' + mark(st) + '</i></button>'; });
         h += '</div>';
@@ -1126,7 +1129,7 @@ function stepFocus() {
   return f;
 }
 function renderBoard() {
-  const cols = G.cfg.cols; let h = '<div class="board" style="grid-template-columns:repeat(' + cols + ',1fr)">';
+  const cols = G.cfg.cols; let h = '<div class="board' + (G.cfg.noHeight ? ' nh' : '') + '" style="grid-template-columns:repeat(' + cols + ',minmax(0,1fr))">';
   let targets = [], blockTargets = [], tcls = '', ghostRoom = -1; const a = curActor(); const mine = !replay && myTurn();
   if (!replay && viewer && viewer !== 'all') {
     if (G.phase === 'bird' && teamOf(viewer) === 'bird' && !G.inputs[viewer]) targets = Array.from(new Set(birdTargets(birdOf(viewer)).map(x => x.room)));
@@ -1142,7 +1145,7 @@ function renderBoard() {
     h += '</div><div class="furns">';
     const ms = marksFor(rm.id);
     rm.furn.forEach((f, fi) => {
-      h += '<div class="furn' + (focus.furn === rm.id + '_' + fi ? ' focus' : '') + '">' + (G.cfg.noHeight ? '' : '<div class="fbar" style="height:' + (8 + f.height * 9) + 'px;background:' + HEX[f.color] + '"></div>') + '<div class="flabel">' + kindIcon(f, G.cfg.noHeight ? 44 : 30) + (G.cfg.noHeight ? '' : '<br><span class="hfull">高さ</span><span class="hshort">高</span>' + f.height) + '</div><div class="fmarks">';
+      h += '<div class="furn' + (focus.furn === rm.id + '_' + fi ? ' focus' : '') + '">' + (G.cfg.noHeight ? '' : '<div class="fbar" style="height:' + (8 + f.height * 9) + 'px;background:' + HEX[f.color] + '"></div>') + '<div class="flabel">' + kindIcon(f, G.cfg.noHeight ? 56 : 30) + (G.cfg.noHeight ? '' : '<br><span class="hfull">高さ</span><span class="hshort">高</span>' + f.height) + '</div><div class="fmarks">';
       // コマは、最後に調べた家具の前に立つ
       if (!replay) G.seekers.forEach((s, si) => ['w', 'a'].forEach(k => { if (s[k].room === rm.id && s[k].furn === fi) h += pieceChip(si, k, (a && a.si === si && a.k === k && !ui.step ? ' cur' : '')); }));
       if (seesTrapFurn() && G.traps.some(tr => tr.room === rm.id && tr.furn === fi)) h += '<span class="tag trap" title="ここに罠">罠</span>';
@@ -1150,7 +1153,7 @@ function renderBoard() {
       if (!replay) ms.filter(m => m.furn === fi).forEach(m => {
         const old = m.turn !== G.turn || G.phase !== 'seeker';
         const o = old ? ' old' : '';
-        m.feathers.forEach(c => { h += '<span class="tag' + o + '" style="background:' + HEX[c] + '" title="T' + m.turn + ' の探索で見つけた色付きの羽">羽' + (old ? '<small>T' + m.turn + '</small>' : '') + '</span>'; });
+        m.feathers.forEach(c => { h += '<span class="tag' + o + '" style="background:' + (G.cfg.anyFurn ? '#f4ead0;color:#1b232b' : HEX[c]) + '" title="T' + m.turn + ' の探索で見つけた色付きの羽">羽' + (old ? '<small>T' + m.turn + '</small>' : '') + '</span>'; });
         if (!old) {
           if (m.white) h += '<span class="tag wht" title="白い羽">白羽×' + m.white + '</span>';
           if (m.chirp) h += '<span class="mk" title="隣室から鳴き声">♪×' + m.chirp + '</span>';
@@ -1173,11 +1176,11 @@ function renderBoard() {
 
 // ---------- 描画：横のパネル ----------
 function prefsHtml(p) {
-  return '<div class="prefs">好きな色 <b style="color:' + HEX[p.color] + '">' + Core.CJP[p.color] + '</b> ／ ' + (G.cfg.noHeight ? '' : '好きな高さ <b>' + p.height + '</b> ／ ') + '苦手な色 ' + (p.dis && p.dis.length ? p.dis.map(c => '<b style="color:' + HEX[c] + '">' + Core.CJP[c] + '</b>').join('・') : G.cfg.dislikes === 0 ? 'なし' : '（これから選ぶ）') + '</div>';
+  return '<div class="prefs">' + (G.cfg.anyFurn ? '' : '好きな色 <b style="color:' + HEX[p.color] + '">' + Core.CJP[p.color] + '</b> ／ ') + '' + (G.cfg.noHeight ? '' : '好きな高さ <b>' + p.height + '</b> ／ ') + '苦手な色 ' + (p.dis && p.dis.length ? p.dis.map(c => '<b style="color:' + HEX[c] + '">' + Core.CJP[c] + '</b>').join('・') : G.cfg.dislikes === 0 ? 'なし' : '（これから選ぶ）') + '</div>';
 }
 function disButtons(color, dis) {
   let h = '<div class="choices">';
-  Core.COLORS.filter(c => c !== color).forEach(c => { h += '<button class="' + ((dis || []).includes(c) ? 'on' : '') + '" data-act="disPick" data-arg="' + c + '"><span class="dot" style="background:' + HEX[c] + '"></span>' + Core.CJP[c] + '</button>'; });
+  Core.COLORS.filter(c => G.cfg.anyFurn || c !== color).forEach(c => { h += '<button class="' + ((dis || []).includes(c) ? 'on' : '') + '" data-act="disPick" data-arg="' + c + '"><span class="dot" style="background:' + HEX[c] + '"></span>' + Core.CJP[c] + '</button>'; });
   return h + '</div>';
 }
 function bellHtml() {
@@ -1222,7 +1225,7 @@ function panelHtml() {
   if (t === 'bird') {
     const b = birdOf(viewer);
     h += '<div class="card"><div class="small">あなたの小鳥（🐤' + (G.birds.indexOf(b) + 1) + '）' + (b.status === 'caught' ? '：捕まっています' : '') + '</div>' + prefsHtml(b.prefs);
-    h += '<div class="small">' + (G.cfg.noHeight ? '好きな色の家具にだけ隠れられます。どの部屋にも、その色の家具は1つだけあります。苦手な色の部屋には入れません。' : '好きな色か好きな高さの家具にだけ隠れられます。苦手な色の部屋と家具は使えません。') + '</div></div>';
+    h += '<div class="small">' + (G.cfg.anyFurn ? '苦手な色の部屋には入れません。苦手な色の家具にも隠れられません。それ以外の家具なら、どれにでも隠れられます。' : G.cfg.noHeight ? '好きな色の家具にだけ隠れられます。どの部屋にも、その色の家具は1つだけあります。苦手な色の部屋には入れません。' : '好きな色か好きな高さの家具にだけ隠れられます。苦手な色の部屋と家具は使えません。') + '</div></div>';
     G.birds.filter(o => o !== b).forEach(o => { h += '<div class="card"><div class="small">仲間：' + esc(o.name) + '（' + (o.status === 'active' ? '逃走中' : '捕まっている') + '）</div>' + prefsHtml(o.prefs) + '</div>'; });
     if (G.cfg.mini && G.phase === 'bird' && b.status === 'active' && !birdNeedsInput(b)) h += '<div class="card"><p class="warn">移れる家具がありません。このターンは、いまの家具にとどまります。</p><button class="primary" data-fn="doBirdPhase">次へ</button></div>';
     if (G.phase === 'colorcheck') {
@@ -1309,19 +1312,19 @@ const TIPS = [
 ];
 const MINI_TIPS = [
   ['小鳥が1羽、どこかの家具に隠れています。隠れている家具を当てたら、あなたの勝ち。最後のターンまで逃げ切られたら負けです。', '弟子だけは、隣の部屋の鳴き声も聞けます。調べた結果は、右の「わかったこと」と小さい地図に自動で書かれます。'],
-  ['小鳥は毎ターン必ず、道でつながった隣の部屋へ動きます。同じ部屋にはとどまれません。', '小鳥は「好きな色の家具」にしか隠れません。色付きの羽を見つけたら、その色が好きな色です。どの部屋でも、その色の家具を調べれば当たります。'],
-  ['魔法使いは「加速」を2回使えます。右の「加速」ボタンを押してから部屋を選ぶと、2部屋先まで動けます。', '小鳥には苦手な色が1つあり、その色の部屋には入りません。右の記録が、苦手な色の候補を自動で減らしていきます。'],
-  ['地図の🐤（いる）や？（いるかも）の部屋を狙いましょう。×の部屋にはいません。']
+  ['小鳥は毎ターン必ず動きます。行き先は、同じ部屋の別の家具か、道でつながった隣の部屋です。', '小鳥には苦手な色が2つあります。その色の部屋には入らず、その色の家具にも隠れません。'],
+  ['羽や気配を見つけると、その部屋と家具の色は「苦手ではない」と分かります。右の記録が、苦手な色の候補を自動で減らしていきます。', '苦手な2色が分かれば、小鳥が入れる部屋と、隠れられる家具（1部屋に2つ）が絞れます。'],
+  ['魔法使いは「加速」を2回使えます。右の「加速」ボタンを押してから部屋を選ぶと、2部屋先まで動けます。', '地図の🐤（いる）や？（いるかも）の部屋を狙いましょう。×の部屋にはいません。']
 ];
-const MINI_BIRD_TIPS = ['あなたは小鳥です。最後のターンまで捕まらなければ勝ち。毎ターン必ず、道でつながった隣の部屋へ動きます（同じ部屋にはとどまれません）。', '隠れられるのは、好きな色の家具だけです。苦手な色の部屋には入れません。自分の好みは右に出ています。', '動いた後、前にいた家具には色付きの羽が残ります。見つかると、好きな色がばれます。魔法使いと弟子は、いまいる部屋とその隣の部屋を調べられます。'];
+const MINI_BIRD_TIPS = ['あなたは小鳥です。最後のターンまで捕まらなければ勝ち。毎ターン必ず動きます（同じ部屋の別の家具か、道でつながった隣の部屋）。', '苦手な色の部屋には入れず、苦手な色の家具にも隠れられません。それ以外なら、どの家具にでも隠れられます。', '動いた後、前にいた家具には羽が残ります。どの色の部屋や家具を使ったかで、苦手な色がばれていきます。', '魔法使いと弟子は、いまいる部屋とその隣の部屋を調べられます。魔法使いは2回だけ、2部屋先まで動けます。'];
 function guideOn() { return !!(G && (G.cpuBirds || (G.cfg.mini && teamOf(viewer) === 'seeker')) && ui.guide !== false && viewer !== 'all' && !replay && G.phase !== 'end'); }
 function miniBirdGuide() {
   // ミニ対戦の小鳥役への案内
   if (!(G && G.cfg.mini) || teamOf(viewer) !== 'bird' || replay || G.phase === 'end') return '';
   const b = birdOf(viewer); let step = '', n = 1;
-  if (G.phase === 'dislike') step = '右で、苦手な色を1つ選んで「決定」を押してください。その色の部屋には入れなくなります（盤面を見て、動きやすい色を残しましょう）';
+  if (G.phase === 'dislike') step = '右で、苦手な色を' + G.cfg.dislikes + 'つ選んで「決定」を押してください。その色の部屋には入れず、その色の家具にも隠れられなくなります（盤面を見て、動きやすい色を残しましょう）';
   else if (G.phase === 'bird' && b.status === 'active' && !birdNeedsInput(b)) step = '移れる家具がないので、このターンはとどまります。右の「次へ」を押してください';
-  else if (G.phase === 'bird') { const d = draft[b.pid]; if (ui.modal) { n = 2; step = '隠れる家具を1つクリックしてください'; } else if (d) { n = 3; step = '右の「決定」を押してください（押す前なら選び直せます）'; } else step = '黄色に光っている部屋（道でつながった隣の部屋）を、1つクリックしてください'; }
+  else if (G.phase === 'bird') { const d = draft[b.pid]; if (ui.modal) { n = 2; step = '隠れる家具を1つクリックしてください'; } else if (d) { n = 3; step = '右の「決定」を押してください（押す前なら選び直せます）'; } else step = '黄色に光っている部屋を、1つクリックしてください（いまいる部屋の別の家具でもOK）'; }
   else return '';
   const tip = G.phase === 'bird' ? MINI_BIRD_TIPS[G.turn - 1] : '';
   return '<div class="guide bd"><div class="gwho">🐤 ' + esc(b.name) + '（小鳥）の番</div><div class="gstep"><span class="gnum">' + n + '</span>' + step + '</div>' + (tip ? '<div class="gtip"><b>ルール</b>' + esc(tip) + '</div>' : '') + '</div>';
