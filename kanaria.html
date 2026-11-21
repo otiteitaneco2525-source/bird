@@ -52,6 +52,7 @@ header{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:cen
 .piece{display:inline-block;border-radius:10px;padding:0 6px;font-size:13px;background:#5a4bb0;color:#fff;white-space:nowrap}.piece.s1{background:#2f8f86}
 .piece.cur.pw{outline:3px solid #d9bcff;box-shadow:0 0 14px 5px #b07cff}.piece.cur.pa{outline:3px solid #a8ffe6;box-shadow:0 0 14px 5px #2fd0a8}.fmarks .piece{font-size:12px;padding:0 4px;margin:1px}.piece.ghost{opacity:.55;outline:1px dashed #fff}.piece.frozen{outline:2px solid #9fe3ff}
 .pin{margin-left:auto}
+.fth{display:inline-block;width:26px;height:26px;vertical-align:middle;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center}.fwrap{display:inline-flex;align-items:center;margin:1px;filter:drop-shadow(0 0 2px rgba(0,0,0,.95)) drop-shadow(0 0 1px #000)}.fwrap small{font-size:10px;font-weight:bold;color:#fff;margin-left:-2px}.fwrap.old{opacity:.7}
 .tag{display:inline-block;border-radius:6px;padding:0 4px;margin:1px;font-size:11px;font-weight:bold;color:#111;background:#ddd;border:1px solid rgba(0,0,0,.5)}.tag.old{opacity:.6}.tag.wht{background:#fff}.tag.trap{background:#ff9d5c}.tag small{font-weight:normal;margin-left:2px}
 .blk{position:absolute;background:#6fd3ff;color:#062a3a;font-weight:bold;border-radius:50%;width:22px;height:22px;line-height:22px;text-align:center;z-index:3}
 .blk.r{right:-22px;top:calc(50% - 11px)}.blk.l{left:-22px;top:calc(50% - 11px)}.blk.d{bottom:-22px;left:calc(50% - 11px)}.blk.u{top:-22px;left:calc(50% - 11px)}
@@ -59,7 +60,7 @@ header{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:cen
 aside{display:flex;flex-direction:column;gap:10px;min-width:0}
 .card{background:#1d2832;border:1px solid #334352;border-radius:10px;padding:10px 12px;margin-bottom:8px}.card.big p{font-size:16px}
 .rn{display:inline-block;min-width:20px;text-align:center;background:#e8c27a;color:#1b232b !important;border-radius:5px;padding:0 5px;margin:0 2px;font-weight:900;font-size:1.05em}
-.amap{display:grid;gap:4px;margin:4px 0}.am{position:relative;border:2px solid;border-radius:6px;height:44px;padding:1px 5px}.am b{font-size:13px;color:#fff}.am span{position:absolute;left:0;right:0;top:12px;text-align:center;font-size:18px;font-weight:900;color:#fff}.am.no{opacity:.45}.am.no span{color:#ff8a8a}.am.here{box-shadow:0 0 0 2px #fff,0 0 10px #fff}.am.maybe span{color:#ffd98a}.am i{position:absolute;right:3px;top:1px;font-style:normal;font-size:10px;color:#fff;background:rgba(0,0,0,.45);border-radius:4px;padding:0 3px}
+.amap{display:grid;gap:4px;margin:4px 0}.amaps{display:grid;gap:8px}.amaps.two{grid-template-columns:1fr 1fr}.amt{font-size:11px;color:#e8c27a;margin-bottom:2px}.amapbox.old{opacity:.8}.amapbox.old .amt{color:#9fb0bf}.amaps.two .am{height:38px}.amaps.two .am span{top:10px;font-size:16px}.am{position:relative;border:2px solid;border-radius:6px;height:44px;padding:1px 5px}.am b{font-size:13px;color:#fff}.am span{position:absolute;left:0;right:0;top:12px;text-align:center;font-size:18px;font-weight:900;color:#fff}.am.no{opacity:.45}.am.no span{color:#ff8a8a}.am.here{box-shadow:0 0 0 2px #fff,0 0 10px #fff}.am.maybe span{color:#ffd98a}.am i{position:absolute;right:3px;top:1px;font-style:normal;font-size:10px;color:#fff;background:rgba(0,0,0,.45);border-radius:4px;padding:0 3px}
 .card.auto{border:1px solid #e8c27a}.atitle{color:#e8c27a;font-weight:bold;margin-bottom:6px}.asum{background:#2a2414;border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:14px;line-height:1.7}.asum b{color:#ffd98a}
 .anote{font-size:13px;line-height:1.6;margin:6px 0;color:#dfe7ee}.anote .at{color:#e8c27a;font-size:12px}.anote.ev{color:#ffd98a}.aold{margin:6px 0 0}.aold summary{font-weight:normal;font-size:12px;color:#9fb0bf}.aold .anote{color:#9fb0bf}
 .tsumari{background:#2a2414;border-left:3px solid #e8c27a;border-radius:6px;padding:8px 10px;margin:6px 0 10px;font-size:14px;line-height:1.7}.tsumari b{color:#ffd98a}
@@ -95,7 +96,7 @@ body.g3 button[data-act="seekerSubmit"]:not([disabled]),body.g4 button[data-fn="
 #roomList{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:middle}
 .rs{font-size:18px}.rs b{font-size:28px;color:#fff}
 @media(max-width:1000px){#game{grid-template-columns:1fr}}
-@media(max-width:700px){#game{padding:8px 6px;gap:8px}.board{gap:10px}.road.r{right:-12px;width:10px;height:10px}.road.d{bottom:-12px;height:10px;width:10px}.room{padding:4px 3px 3px;min-height:0}.furns{gap:2px;min-height:0}.hfull{display:none}.hshort{display:inline}.flabel{font-size:9px}.rcol{font-size:9px;padding:0 5px}.gstep{font-size:15px}.gnum{width:24px;height:24px;line-height:24px;font-size:14px}.fmarks{font-size:10px}.fmarks .piece,.piece{font-size:10px;padding:0 3px}.tag{font-size:9px}.amap .am{height:36px}}
+@media(max-width:700px){#game{padding:8px 6px;gap:8px}.board{gap:10px}.road.r{right:-12px;width:10px;height:10px}.road.d{bottom:-12px;height:10px;width:10px}.room{padding:4px 3px 3px;min-height:0}.furns{gap:2px;min-height:0}.hfull{display:none}.hshort{display:inline}.flabel{font-size:9px}.rcol{font-size:9px;padding:0 5px}.gstep{font-size:15px}.gnum{width:24px;height:24px;line-height:24px;font-size:14px}.fmarks{font-size:10px}.fth{width:20px;height:20px}.fmarks .piece,.piece{font-size:10px;padding:0 3px}.tag{font-size:9px}.amap .am{height:36px}}
 </style>
 </head>
 <body>
@@ -425,7 +426,7 @@ function furnLabel(G, room, furn) { const f = G.rooms[room].furn[furn]; return G
 function seekerOrder(G) { const o = []; G.seekers.forEach((s, si) => ['w', 'a'].forEach(k => o.push({ si, k }))); return o; }
 function beginSeekerPhase(G) {
   G.actorIdx = 0; G.reveal = [];
-  G.prevSnap = G.birds.filter(b => b.status === 'active' && b.prev).map(b => ({ prev: b.prev, color: b.prefs.color }));
+  G.prevSnap = G.birds.filter(b => b.status === 'active' && b.prev).map(b => ({ prev: b.prev, color: b.prefs.color, ok: COLORS.filter(x => !b.prefs.dis.includes(x)) }));
 }
 function validPieceInput(G, si, k, src) {
   // 入力を検証する。行動が無効・未選択なら act は null（＝その場でランダム探索）
@@ -462,6 +463,8 @@ function seekerAct(G, si, k, src, rand) {
     else {
       st.presence = G.birds.filter(b => b.status === 'active' && !b.hidden && b.pos.room === room).length;
       st.feathers = prevSnap.filter(x => x.prev.room === room && x.prev.furn === act.furn).map(x => x.color);
+      // anyFurn：羽は「苦手ではない色」のグラデーション。見つけると、苦手な色がわかる
+      if (G.cfg.anyFurn) st.featherOk = prevSnap.filter(x => x.prev.room === room && x.prev.furn === act.furn).map(x => x.ok);
       st.white = prevSnap.filter(x => x.prev.room === room).length;   // 白い羽は魔法使いも弟子も見つけられる
       if (k === 'a') {
         const nb = neighbors(G, room);
@@ -497,7 +500,7 @@ function seekerAct(G, si, k, src, rand) {
   st.gauge = G.gauge; st.score = snapScore();
   const idx = G.reveal.length; G.reveal.push(st); out.push(st);
   if (st.t === 'sweep' && st.sweepFeathers) st.sweepFeathers.forEach(f => G.marks.push({ turn: G.turn, idx, room: st.room, furn: f.furn, k: 'w', presence: 0, feathers: [f.color], white: 0, chirp: 0 }));
-  if (st.t === 'search' && !st.found) G.marks.push({ turn: G.turn, idx, room: st.room, furn: st.furn, k: st.k, presence: st.presence, feathers: st.feathers, white: st.white, chirp: st.chirp });
+  if (st.t === 'search' && !st.found) G.marks.push({ turn: G.turn, idx, room: st.room, furn: st.furn, k: st.k, presence: st.presence, feathers: st.feathers, featherOk: st.featherOk || null, white: st.white, chirp: st.chirp });
   G.actorIdx++;
   if (G.cfg.mini && G.miniEnd) G.phase = 'end';
   return out;
@@ -516,7 +519,7 @@ function stepText(G, st) {
     if (st.found) return head + '小鳥を' + st.found.length + '羽見つけた！ 探索者陣営 +' + st.found.reduce((a, f) => a + f.pts, 0) + '点';
     const parts = [];
     if (st.presence) parts.push('同じ部屋の別の家具に気配（' + st.presence + '羽）');
-    if (st.feathers.length) parts.push(G.cfg.anyFurn ? '羽（前のターン、小鳥はこの家具にいた）' : '色付きの羽（' + st.feathers.map(c => CJP[c]).join('・') + '）');
+    if (st.feathers.length) parts.push(G.cfg.anyFurn ? st.featherOk.map(o => o.map(x => CJP[x]).join('と') + 'の羽').join('、') + '（前のターン、小鳥はこの家具にいた）' : '色付きの羽（' + st.feathers.map(c => CJP[c]).join('・') + '）');
     if (st.white) parts.push('白い羽 ' + st.white + '枚');
     if (st.chirp) parts.push('隣室から鳴き声 ' + st.chirp + '羽ぶん');
     return head + (parts.length ? parts.join('、') : '何も見つからなかった（探索ゲージ +1）');
@@ -592,6 +595,9 @@ function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<':
 // ---------- 開始 ----------
 // 家具のアイコン（白い絵。家具の色で塗って表示する）
 const ICON = {sofa: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAA6klEQVR4nO2SwQpBQRiF7wLxBBZWkq3svYCVFAsbpbwKYa08iywp5SEk4nY9ARs+Tf3q9kd35l7KwqnZnDn/OdN/xvP++DkAGWAC+NjjBIzNrE2AEcbFyCbA5eUavk1AIngWAccE/gebgIKU5mwO5F8ZNoFABDXhujECOjJbly1sgYZeyR5Iy3Ep2wdSL+YOJuCsxC15ydAhYCAzbcUHhpwpch5Z1BsAC+U1NWRFkXegFMO8CNyUV/V5ueHzWIfT+18I6IUDcsDug+ZbIKt3WJaSrgmML+aTRHb4VDsU7KQ3Aytg+S39H14YDzoHPf1Z9wdPAAAAAElFTkSuQmCC', lamp: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAi0lEQVR4nN3TsRFAQBCF4dOAXAdiHUi1INODSA8SRQg0IHXXhdEF+ZMQCBhv53bm+Bv45nb3jPllACIADu8bWSABX8wAmQBIGaAQADkDVAKgZIBGANQM0AmAlgEGAdAzAPMHziYGWMA3M8AqALZwRnQXjoxW0ARwHZvTBqx34Ls7wPPJOm3AenlF0O13kguWuUXxswAAAABJRU5ErkJggg==', table: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAj0lEQVR4nO3UQQrCMBBA0ZF2YxeFHrvewZU3KB5AGsEzZfUli0RaiZiQRJD5y5LO20wiomk/DTgAJ8CSnwVmNyuGdMCZcl2Afo8MwJXyLcDRIxNgqNcNGB30oH53BzVJWkKmgbP6hXjJ5e5kKPrx7UDicFFI/gkyYSXTIOP/+woqEQrlFoP8e5e8AB+gzcwn6bh+WO6QaKUAAAAASUVORK5CYII=', cabinet: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAASUlEQVR4nO3SMQoAIAwEwf3/p2NlowhicglIprRw8RDa/0yM8gDOBeoDXvkBlqdzOdFpsvxANMoDqL8p6oCXPjBtB48s6J5GmAH8JGvNGEJoxQAAAABJRU5ErkJggg=='};
+const FEATHER = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACqUlEQVR4AbyWC3bqMAxEGzYArOiRlTVvZUlXBGyAdK6JfOQfJJS2J4M/kjUjy3G6+3jz3/V6/bxcLqMwA8bn8/nUonmLAAiAIykIW0J+LADirutGyCGZ53mg74GdeVr8ve1HAiAkqA+Y9yH2c7n/ywIgz4PnY0/s+34XXhbgA9JXZp+0a7Db7f6Z32YBZO4zsEC0EkH9J/oZmJu0Q/3hcOj2+/1/s28SALmCDD6DJdCkwP3tdvvS2L8BgVjCJsA6YgD5hWe1ALKGnFVqExLIsYskvA34LMDvJP/BY7GFZrUABfc1JijBQ+YN8kDw7Ge1gEqgE5kzL3F55kw3sekMWL1EQj1jUG1pz0DXbZMcnxwS3bHO8HAHIFeAgS22BbQSMxyPxwm7xpRCTfnIb+TgAfxB7vVQAOT5AgUd2ELIa/bcHx/Q2qmmAAgsmEhHgqjdRG7r1YbDqrZ4mgIgzLwnMqccuY26aq43INSgGFxA8eLROHmqAnz25i2ScOgUuDh0bC91xpc6I9TAOuaw1VAVoEy4UqO/xoEcojiZdrgXBsTJh39ExloS6ZL7qCrgbrr/KuiqE3/3jr/NNyN6LJ1CADVebB+Qs5Vko11IdsV8aq2tq9nyuUKAd4CcsSdXTTuNe0iA7MkFxZytk+3pUwiwAwMJq1XT5NCxGxw4SIAEhU+s2iCMOdatRSGAhZAjBDKNk3rKFr5sEjZjB1Y21sh/01MVQCACQ/YoGnagbR9NxCP/mq0qAEcC064AF02P6BW+hUtVANk7z+SQufnwlqj2L5MTqxAAuWWvrR0gENTtuGgCZA8Hb+uBgzBHIUDB4/vuCegbXt3unJxxIoDsmQRKOQph/FuIAiC37CEn298i9XGjAJHH9/2vyBESBSjrcNolJHz5ML4Dz2J8AwAA///n1nhgAAAABklEQVQDAGfEwH76chE9AAAAAElFTkSuQmCC';
+// 羽のアイコン。bg に色（またはグラデーション）を渡す
+function featherIcon(bg, title, cls) { return '<span class="fth' + (cls || '') + '" title="' + esc(title) + '" style="background:' + bg + ';-webkit-mask-image:url(' + FEATHER + ');mask-image:url(' + FEATHER + ')"></span>'; }
 const KIND_ICON = { 'ソファ': 'sofa', '椅子': 'sofa', 'ランプ': 'lamp', '机': 'table', '戸棚': 'cabinet' };
 function kindIcon(f, px) { const k = KIND_ICON[f.kind]; if (!k) return esc(f.kind); return '<span class="kicon" title="' + esc(f.kind) + '" style="width:' + px + 'px;background-color:' + HEX[f.color] + ';-webkit-mask-image:url(' + ICON[k] + ');mask-image:url(' + ICON[k] + ')"></span>'; }
 // ---------- オンライン対戦（ミニ対戦を、離れた2人で） ----------
@@ -787,7 +793,7 @@ function maybeAdvance() {
 // ---------- わかったこと（自動メモ） ----------
 function RN(r) { return '\u00ab' + G.rooms[r].name + '\u00bb'; }
 function fmtNote(s) { return esc(s).replace(/\u00ab(.+?)\u00bb/g, '<b class="rn">$1</b>'); }
-function amap() { if (!auto.map || auto.map.turn !== G.turn) auto.map = { turn: G.turn, empty: {}, here: {}, maybe: {}, prev: {} }; return auto.map; }
+function amap(t) { if (!auto.maps) auto.maps = {}; t = t || G.turn; if (!auto.maps[t]) auto.maps[t] = { turn: t, empty: {}, here: {}, maybe: {}, prev: {} }; return auto.maps[t]; }
 function cj(list) { return Array.from(new Set(list)).map(c => Core.CJP[c]).join('・'); }
 function activeN() { return G.birds.filter(b => b.status === 'active').length; }
 // past=true は「前のターン」の手がかり。このターンに捕まえた小鳥のものかもしれないので、1羽に絞り込む計算には使わない
@@ -795,7 +801,12 @@ function autoRec(id, notDis, height, past) { auto.recs.push({ turn: G.turn, era:
 function autoEvent(text) { auto.era++; auto.notes.push({ turn: G.turn, who: '', lines: [text], ev: true }); }
 function featherLines(room, furn, c, L) {
   const rm = G.rooms[room], f = rm.furn[furn]; const dis = G.cfg.dislikes > 0;
-  if (G.cfg.anyFurn) { L.push('【羽】小鳥は前のターン、この家具にいた。' + (dis ? '苦手な色は ' + cj([rm.color, f.color]) + ' ではない。' : '')); autoRec(null, dis ? [rm.color, f.color] : [], null, true); return; }
+  if (G.cfg.anyFurn) {
+    const ok = (featherLines.ok && featherLines.ok.shift()) || null;
+    if (ok && dis) { const bad = Core.COLORS.filter(x => !ok.includes(x)); L.push('【' + cj(ok).replace('・', 'と') + 'の羽】小鳥は前のターン、この家具にいた。羽の2色は、苦手ではない色 → 苦手な色は ' + cj(bad) + ' で確定。' + cj(bad) + 'の部屋には入らず、' + cj(bad) + 'の家具にも隠れない。'); autoRec(null, ok, null, true); }
+    else { L.push('【羽】小鳥は前のターン、この家具にいた。' + (dis ? '苦手な色は ' + cj([rm.color, f.color]) + ' ではない。' : '')); autoRec(null, dis ? [rm.color, f.color] : [], null, true); }
+    return;
+  }
   let s = '【' + Core.CJP[c] + 'の羽】好きな色が' + Core.CJP[c] + 'の小鳥が、前のターンこの家具にいた。';
   if (f.color !== c) s += '家具は' + Core.CJP[f.color] + 'なので、色ではなく高さで選んでいる → 好きな高さは' + f.height + '。';
   if (dis) s += '苦手な色は ' + cj([c, rm.color, f.color]) + ' ではない。';
@@ -809,7 +820,7 @@ function noteStep(st) {
     L.push('小鳥を捕まえた。復活すると好みがすべて変わるので、復活した小鳥は推理し直しになる。'); st.notes = L; auto.notes.push({ turn: G.turn, who: Core.pieceLabel(G, st.si + st.k), lines: L }); auto.era++; auto.capTurn = G.turn; return L; }
   if (st.t === 'search') {
     const rm = G.rooms[st.room], nbs = Core.neighbors(G, st.room), nb = nbs.map(RN).join('・'), M = amap(), rn = RN(st.room);
-    st.feathers.forEach(c => featherLines(st.room, st.furn, c, L));
+    featherLines.ok = (st.featherOk || []).slice(); st.feathers.forEach(c => featherLines(st.room, st.furn, c, L));
     if (st.presence) { L.push('いま' + rn + 'の部屋の、残り3つの家具のどれかに小鳥が' + st.presence + '羽いる。' + (dis ? 'その小鳥の苦手な色は' + Core.CJP[rm.color] + 'ではない。' : '')); if (dis) autoRec(null, [rm.color]); }
     else L.push(G.hideNow ? rn + 'の部屋に気配はない（気配を消している小鳥がいるので、いないとは言い切れない）。' : 'いま' + rn + 'の部屋に小鳥はいない。');
     if (st.presence) M.here[st.room] = st.presence; else if (!G.hideNow) M.empty[st.room] = 1;
@@ -851,9 +862,8 @@ function autoSummary() {
   }
   return out;
 }
-function autoMapHtml() {
-  // このターンにわかったことを書き込んだ小さい地図
-  const M = amap(); let h = '<div class="amap" style="grid-template-columns:repeat(' + G.cfg.cols + ',1fr)">';
+function oneMap(M) {
+  let h = '<div class="amap" style="grid-template-columns:repeat(' + G.cfg.cols + ',1fr)">';
   G.rooms.forEach(r => {
     let mk = '', cls = '';
     if (M.here[r.id]) { mk = '🐤' + M.here[r.id]; cls = ' here'; }
@@ -861,7 +871,15 @@ function autoMapHtml() {
     else if (M.maybe[r.id]) { mk = '？'; cls = ' maybe'; }
     h += '<div class="am' + cls + '" style="border-color:' + HEX[r.color] + ';background:' + TINT[r.color] + '"><b>' + r.name + '</b><span>' + mk + '</span>' + (M.prev[r.id] ? '<i>前' + M.prev[r.id] + '</i>' : '') + '</div>';
   });
-  return h + '</div><div class="small">T' + G.turn + 'の地図　🐤 いまいる（数）／？ いるかも／× いない／前 前のターンにいた（数）</div>';
+  return h + '</div>';
+}
+function autoMapHtml() {
+  // 小さい地図。1ターン前にわかったことと、このターンにわかったことを並べる
+  const cur = amap(), old = G.turn > 1 && auto.maps[G.turn - 1]; const two = old && G.cfg.cols <= 3;
+  let h = '<div class="amaps' + (two ? ' two' : '') + '">';
+  if (old) h += '<div class="amapbox old"><div class="amt">1ターン前（T' + (G.turn - 1) + '）にわかったこと</div>' + oneMap(old) + '</div>';
+  h += '<div class="amapbox"><div class="amt">このターン（T' + G.turn + '）にわかったこと</div>' + oneMap(cur) + '</div></div>';
+  return h + '<div class="small">🐤 いた（数）／？ いるかも／× いなかった／前 その前のターンにいた（数）' + (old ? '。小鳥は毎ターン動くので、1ターン前の印はそこから1歩ぶん動いています。' : '') + '</div>';
 }
 function autoHtml() {
   if (!auto.notes.length) return '<div class="card auto"><div class="atitle">わかったこと（自動で記録）</div><div class="small">探索の結果からわかることを、ここに自動で書きます。</div>' + autoMapHtml() + '</div>';
@@ -1153,9 +1171,14 @@ function renderBoard() {
       if (!replay) ms.filter(m => m.furn === fi).forEach(m => {
         const old = m.turn !== G.turn || G.phase !== 'seeker';
         const o = old ? ' old' : '';
-        m.feathers.forEach(c => { h += '<span class="tag' + o + '" style="background:' + (G.cfg.anyFurn ? '#f4ead0;color:#1b232b' : HEX[c]) + '" title="T' + m.turn + ' の探索で見つけた色付きの羽">羽' + (old ? '<small>T' + m.turn + '</small>' : '') + '</span>'; });
+        m.feathers.forEach((c, ci) => {
+          const ok = G.cfg.anyFurn && m.featherOk && m.featherOk[ci];
+          const bg = ok ? 'linear-gradient(135deg,' + HEX[ok[0]] + ' 0%,' + HEX[ok[0]] + ' 35%,' + HEX[ok[1]] + ' 65%,' + HEX[ok[1]] + ' 100%)' : G.cfg.anyFurn ? '#f4ead0' : HEX[c];
+          const ttl = 'T' + m.turn + ' の探索で見つけた羽' + (ok ? '（' + Core.CJP[ok[0]] + 'と' + Core.CJP[ok[1]] + '）' : G.cfg.anyFurn ? '' : '（' + Core.CJP[c] + '）');
+          h += '<span class="fwrap' + o + '">' + featherIcon(bg, ttl) + (old ? '<small>T' + m.turn + '</small>' : '') + '</span>';
+        });
         if (!old) {
-          if (m.white) h += '<span class="tag wht" title="白い羽">白羽×' + m.white + '</span>';
+          if (m.white) h += '<span class="fwrap">' + featherIcon('#ffffff', '白い羽：前のターン、この部屋に小鳥がいた') + '<small>×' + m.white + '</small></span>';
           if (m.chirp) h += '<span class="mk" title="隣室から鳴き声">♪×' + m.chirp + '</span>';
           if (m.presence) h += '<span class="mk" title="同じ部屋に気配">気配×' + m.presence + '</span>';
         }
@@ -1313,10 +1336,10 @@ const TIPS = [
 const MINI_TIPS = [
   ['小鳥が1羽、どこかの家具に隠れています。隠れている家具を当てたら、あなたの勝ち。最後のターンまで逃げ切られたら負けです。', '弟子だけは、隣の部屋の鳴き声も聞けます。調べた結果は、右の「わかったこと」と小さい地図に自動で書かれます。'],
   ['小鳥は毎ターン必ず動きます。行き先は、同じ部屋の別の家具か、道でつながった隣の部屋です。', '小鳥には苦手な色が2つあります。その色の部屋には入らず、その色の家具にも隠れません。'],
-  ['羽や気配を見つけると、その部屋と家具の色は「苦手ではない」と分かります。右の記録が、苦手な色の候補を自動で減らしていきます。', '苦手な2色が分かれば、小鳥が入れる部屋と、隠れられる家具（1部屋に2つ）が絞れます。'],
+  ['小鳥が前のターンにいた家具を調べると、2色の羽が見つかります。その2色が「苦手ではない色」なので、残りの2色が苦手な色です。気配や白い羽でも、その部屋の色は苦手ではないと分かります。', '苦手な2色が分かれば、小鳥が入れる部屋と、隠れられる家具（1部屋に2つ）が絞れます。'],
   ['魔法使いは「加速」を2回使えます。右の「加速」ボタンを押してから部屋を選ぶと、2部屋先まで動けます。', '地図の🐤（いる）や？（いるかも）の部屋を狙いましょう。×の部屋にはいません。']
 ];
-const MINI_BIRD_TIPS = ['あなたは小鳥です。最後のターンまで捕まらなければ勝ち。毎ターン必ず動きます（同じ部屋の別の家具か、道でつながった隣の部屋）。', '苦手な色の部屋には入れず、苦手な色の家具にも隠れられません。それ以外なら、どの家具にでも隠れられます。', '動いた後、前にいた家具には羽が残ります。どの色の部屋や家具を使ったかで、苦手な色がばれていきます。', '魔法使いと弟子は、いまいる部屋とその隣の部屋を調べられます。魔法使いは2回だけ、2部屋先まで動けます。'];
+const MINI_BIRD_TIPS = ['あなたは小鳥です。最後のターンまで捕まらなければ勝ち。毎ターン必ず動きます（同じ部屋の別の家具か、道でつながった隣の部屋）。', '苦手な色の部屋には入れず、苦手な色の家具にも隠れられません。それ以外なら、どの家具にでも隠れられます。', '動いた後、前にいた家具には2色の羽が残ります。見つかると、苦手な色がばれます。', '魔法使いと弟子は、いまいる部屋とその隣の部屋を調べられます。魔法使いは2回だけ、2部屋先まで動けます。'];
 function guideOn() { return !!(G && (G.cpuBirds || (G.cfg.mini && teamOf(viewer) === 'seeker')) && ui.guide !== false && viewer !== 'all' && !replay && G.phase !== 'end'); }
 function miniBirdGuide() {
   // ミニ対戦の小鳥役への案内
