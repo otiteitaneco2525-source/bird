@@ -49,11 +49,11 @@ header{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:cen
 .room.target{box-shadow:0 0 0 4px #e8c27a,0 0 22px 4px #e8c27a;cursor:pointer}.room.target2{box-shadow:0 0 0 4px #6fd3ff,0 0 22px 4px #6fd3ff;cursor:pointer}
 .room.target.tw{box-shadow:0 0 0 4px #c9a0ff,0 0 24px 6px #b07cff}.room.target.ta{box-shadow:0 0 0 4px #5fe6c4,0 0 24px 6px #2fd0a8}
 .room.focus{box-shadow:0 0 0 5px #ffffff,0 0 30px 8px rgba(255,255,255,.75);z-index:2}.furn.focus .fbar{outline:4px solid #fff;box-shadow:0 0 14px 4px #fff}.furn.focus .flabel{color:#fff;font-weight:bold}
-.rhead{display:flex;align-items:center;gap:6px;margin-bottom:4px}.rhead b{font-size:18px}.rcol{font-size:11px;border-radius:10px;padding:0 8px;color:#111;font-weight:bold}
+.rhead{display:flex;align-items:center;gap:6px;margin-bottom:4px}.rhead b{font-size:18px;color:#1b232b}.rcol{font-size:11px;border-radius:10px;padding:0 8px;color:#111;font-weight:bold}
 .furns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;align-items:end;min-height:86px;overflow:hidden}
 .furn{position:relative;text-align:center;min-width:0}
 .board.nh .furns{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 4px;align-items:start;min-height:0;padding:6px;overflow:visible}.board.nh .furn{padding:2px 0;border-radius:8px}.board.nh .furn.focus{outline:4px solid #fff;box-shadow:0 0 14px 4px #fff}.board.nh .fmarks{min-height:18px}.board.nh .room{min-height:0}.fbar{width:70%;margin:0 auto;border-radius:4px 4px 0 0;border:1px solid rgba(0,0,0,.45)}
-.flabel{font-size:10px;line-height:1.25;color:#d5dbe0;white-space:nowrap}.hshort{display:none}.fmarks{overflow-wrap:anywhere}.pieces{display:flex;flex-wrap:wrap;gap:2px}.rhead{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px}.kicon{display:inline-block;max-width:100%;aspect-ratio:1;vertical-align:middle;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;filter:drop-shadow(0 0 1px rgba(0,0,0,.9)) brightness(1.15)}.fmarks{min-height:20px;font-size:12px;line-height:1.2}
+.flabel{font-size:10px;line-height:1.25;color:#d5dbe0;white-space:nowrap}.hshort{display:none}.fmarks{overflow-wrap:anywhere}.pieces{display:flex;flex-wrap:wrap;gap:2px}.rhead{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px}.kicon{display:inline-block;max-width:100%;aspect-ratio:1;vertical-align:middle;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;filter:drop-shadow(0 0 1px rgba(0,0,0,.9))}.fmarks{min-height:20px;font-size:12px;line-height:1.2}
 .mk{display:inline-block;background:rgba(0,0,0,.45);border-radius:6px;padding:0 3px;margin:1px}.mk.old{opacity:.55}.mk.white{color:#fff}
 .birdm{background:#e8c27a;color:#111;border-radius:8px;padding:0 3px;font-weight:bold}
 .pieces{min-height:24px;display:flex;flex-wrap:wrap;gap:3px;margin-top:2px}
@@ -591,6 +591,10 @@ const Core = { COLORS, CJP, KINDS, PIECE_JP, makeRand, pick, shuffle, roomName, 
 const $ = s => document.querySelector(s);
 const HEX = { red: '#d9534f', blue: '#4a7fd0', yellow: '#e2b93b', green: '#58a55c' };
 const TINT = { red: '#4a2a2c', blue: '#25364f', yellow: '#4a4226', green: '#27402c' };
+// 盤面の部屋の色（明るい版）。TINT は小さいマップ用にそのまま残す
+const ROOM_TINT = { red: '#DBBECC', blue: '#A8BEDB', yellow: '#DBD1A4', green: '#A9DBB5' };
+// 家具アイコンと羽根の色（横田さん指定の色）。メモやラベルは HEX のまま
+const FURN_HEX = { red: '#FF4D94', blue: '#4D98FF', yellow: '#FFD217', green: '#12FF6C' };
 let G = null, rand = null, viewer = null, pendingViewer = null;
 let draft = {};            // 入力中の内容（プレイヤーごと）
 let ui = { mode: null, modal: null, pinMode: false, banner: '', timerSec: 0, timeLeft: {}, tick: null, step: null, note: '' };
@@ -612,7 +616,7 @@ const FEATHER = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABze
 // 羽のアイコン。bg に色（またはグラデーション）を渡す
 function featherIcon(bg, title, cls) { return '<span class="fth' + (cls || '') + '" title="' + esc(title) + '" style="background:' + bg + ';-webkit-mask-image:url(' + FEATHER + ');mask-image:url(' + FEATHER + ')"></span>'; }
 const KIND_ICON = { 'ソファ': 'sofa', '椅子': 'sofa', 'ランプ': 'lamp', '机': 'table', '戸棚': 'cabinet' };
-function kindIcon(f, px) { const k = KIND_ICON[f.kind]; if (!k) return esc(f.kind); return '<span class="kicon" title="' + esc(f.kind) + '" style="width:' + px + 'px;background-color:' + HEX[f.color] + ';-webkit-mask-image:url(' + ICON[k] + ');mask-image:url(' + ICON[k] + ')"></span>'; }
+function kindIcon(f, px) { const k = KIND_ICON[f.kind]; if (!k) return esc(f.kind); return '<span class="kicon" title="' + esc(f.kind) + '" style="width:' + px + 'px;background-color:' + FURN_HEX[f.color] + ';-webkit-mask-image:url(' + ICON[k] + ');mask-image:url(' + ICON[k] + ')"></span>'; }
 // ---------- オンライン対戦（ミニ対戦を、離れた2人で） ----------
 // Firebase Realtime Database の REST API を使う。必要なのはデータベースのURLだけ。
 // 部屋ごとに { host, hostRole, guest, rev, by, state } を置き、state にゲーム全体（JSON文字列）を入れて、手番の人が書きかえる。
@@ -1172,7 +1176,7 @@ function renderBoard() {
   const focus = replay ? { rooms: [], furn: null } : stepFocus();
   G.rooms.forEach(rm => {
     const cls = ['room']; if (targets.includes(rm.id)) cls.push('target' + tcls); if (blockTargets.includes(rm.id)) cls.push('target2'); if (focus.rooms.includes(rm.id)) cls.push('focus');
-    h += '<div class="' + cls.join(' ') + '" style="background:' + TINT[rm.color] + ';border-color:' + HEX[rm.color] + '" data-room="' + rm.id + '">';
+    h += '<div class="' + cls.join(' ') + '" style="background:' + ROOM_TINT[rm.color] + ';border-color:' + HEX[rm.color] + '" data-room="' + rm.id + '">';
     h += '<div class="rhead"><b>' + rm.name + '</b><span class="rcol" style="background:' + HEX[rm.color] + '">' + Core.CJP[rm.color] + 'の部屋</span>';
     const t = teamOf(viewer); if (t && pins[t][rm.id]) h += '<span class="pin">📍</span>';
     if (G.traps.some(tr => tr.room === rm.id)) h += '<span class="tag trap" title="この部屋に鳥かごの罠">罠</span>';
@@ -1189,7 +1193,7 @@ function renderBoard() {
         const o = old ? ' old' : '';
         m.feathers.forEach((c, ci) => {
           const ok = G.cfg.anyFurn && m.featherOk && m.featherOk[ci];
-          const bg = ok ? 'linear-gradient(135deg,' + HEX[ok[0]] + ' 0%,' + HEX[ok[0]] + ' 35%,' + HEX[ok[1]] + ' 65%,' + HEX[ok[1]] + ' 100%)' : G.cfg.anyFurn ? '#f4ead0' : HEX[c];
+          const bg = ok ? 'linear-gradient(135deg,' + FURN_HEX[ok[0]] + ' 0%,' + FURN_HEX[ok[0]] + ' 35%,' + FURN_HEX[ok[1]] + ' 65%,' + FURN_HEX[ok[1]] + ' 100%)' : G.cfg.anyFurn ? '#f4ead0' : FURN_HEX[c];
           const ttl = 'T' + m.turn + ' の探索で見つけた羽' + (ok ? '（' + Core.CJP[ok[0]] + 'と' + Core.CJP[ok[1]] + '）' : G.cfg.anyFurn ? '' : '（' + Core.CJP[c] + '）');
           h += '<span class="fwrap' + o + '">' + featherIcon(bg, ttl) + (old ? '<small>T' + m.turn + '</small>' : '') + '</span>';
         });
